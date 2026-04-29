@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from "react";
 import {
   Box,
   Card,
@@ -16,79 +16,112 @@ import {
   Paper,
   MenuItem,
   Divider,
-} from '@mui/material';
-import api from '../services/api.js';
-import { formatDate } from '../utils/format.js';
-import { useAuth } from '../hooks/useAuth.jsx';
-import { useApi } from '../hooks/useApi.js';
+} from "@mui/material";
+import api from "../services/api.js";
+import { formatDate } from "../utils/format.js";
+import { useAuth } from "../hooks/useAuth.jsx";
+import { useApi } from "../hooks/useApi.js";
 
-const segmentFields = ['email', 'createdAt'];
+const segmentFields = ["email", "createdAt"];
 
 export default function Lists() {
   const { organization } = useAuth();
   const { loading, callApi } = useApi();
 
   const [lists, setLists] = useState([]);
-  const [name, setName] = useState('');
-  const [customFieldKey, setCustomFieldKey] = useState('');
-  const [customFieldValue, setCustomFieldValue] = useState('');
-  const [segmentKey, setSegmentKey] = useState('');
-  const [segmentValue, setSegmentValue] = useState('');
+  const [name, setName] = useState("");
+  // const [customFieldKey, setCustomFieldKey] = useState('');
+  // const [customFieldValue, setCustomFieldValue] = useState('');
+  const [segmentKey, setSegmentKey] = useState("");
+  const [segmentValue, setSegmentValue] = useState("");
   const [segmentResults, setSegmentResults] = useState([]);
-  const [selectedListId, setSelectedListId] = useState('');
+  const [selectedListId, setSelectedListId] = useState("");
+
+  const [subscribers, setSubscribers] = useState([]);
 
   useEffect(() => {
     const load = async () => {
       const response = await callApi(() => api.getLists());
       setLists(response.data);
-      setSelectedListId(response.data[0]?.id || '');
+      setSelectedListId(response.data[0]?.id || "");
+    };
+    load();
+  }, [callApi]);
+
+  useEffect(() => {
+    const load = async () => {
+      const [listsRes, subsRes] = await Promise.all([
+        callApi(() => api.getLists()),
+        callApi(() => api.getSubscribers()),
+      ]);
+
+      setLists(listsRes.data);
+      setSubscribers(subsRes.data);
+      setSelectedListId(listsRes.data[0]?.id || "");
     };
     load();
   }, [callApi]);
 
   const selectedList = useMemo(
     () => lists.find((item) => item.id === selectedListId),
-    [lists, selectedListId]
+    [lists, selectedListId],
   );
 
   const availableSegmentFields = useMemo(() => {
-    const custom = selectedList?.customFields
-      ? Object.keys(selectedList.customFields)
-      : [];
-    return [...segmentFields, ...custom];
-  }, [selectedList]);
+    const baseFields = ["email", "createdAt"];
+
+    const customKeys = new Set();
+
+    subscribers.forEach((sub) => {
+      if (sub.customFields) {
+        Object.keys(sub.customFields).forEach((key) => customKeys.add(key));
+      }
+    });
+
+    return [...baseFields, ...Array.from(customKeys)];
+  }, [subscribers]);
 
   const handleCreate = async (e) => {
     e.preventDefault();
-    if (!organization) return;
+    if (!name) return;
+    console.log("Creating list...");
 
     const payload = {
       name,
-      organizationId: organization.id,
-      customFields: customFieldKey
-        ? { [customFieldKey]: customFieldValue }
-        : undefined,
+      // organizationId: organization.id,
+      // below custom fields are not supported in the current API implementation, but this is how it would look if they were supported
+      // customFields: customFieldKey
+      //   ? { [customFieldKey]: customFieldValue }
+      //   : undefined,
     };
+    console.log(payload);
 
-    await callApi(() => api.createList(payload), 'List created');
+    await callApi(() => api.createList(payload), "List created");
 
     const response = await callApi(() => api.getLists());
     setLists(response.data);
 
-    setName('');
-    setCustomFieldKey('');
-    setCustomFieldValue('');
+    setName("");
+    // setCustomFieldKey("");
+    // setCustomFieldValue("");
+    console.log(lists);
   };
 
   const handleSegment = async () => {
+    console.log("segmenting with", {
+      selectedListId,
+      segmentKey,
+      segmentValue,
+    });
     if (!selectedListId || !segmentKey || !segmentValue) return;
 
     const response = await callApi(() =>
       api.segmentSubscribers(selectedListId, {
         [segmentKey]: segmentValue,
-      })
+      }),
     );
-
+    console.log("FULL RESPONSE:", response);
+    console.log("RESPONSE DATA:", response.data);
     setSegmentResults(response.data.data || []);
   };
 
@@ -105,6 +138,10 @@ export default function Lists() {
       <Grid container spacing={3}>
         {/* LEFT SIDE */}
         <Grid item xs={12} md={5} lg={4}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Lists are automatically linked to your organization
+          </Typography>
+
           {/* Create List */}
           <Card sx={{ mb: 2 }}>
             <CardContent>
@@ -115,16 +152,17 @@ export default function Lists() {
               <Box
                 component="form"
                 onSubmit={handleCreate}
-                sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+                sx={{ display: "flex", flexDirection: "column", gap: 2 }}
               >
                 <TextField
                   label="List name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
+                  helperText="Give a meaningful name like 'Marketing Users' or 'Beta Testers'"
                 />
 
-                <TextField
+                {/* <TextField
                   label="Custom field key"
                   value={customFieldKey}
                   onChange={(e) => setCustomFieldKey(e.target.value)}
@@ -134,12 +172,12 @@ export default function Lists() {
                   label="Custom field value"
                   value={customFieldValue}
                   onChange={(e) => setCustomFieldValue(e.target.value)}
-                />
+                /> */}
 
                 <Button
                   type="submit"
                   variant="contained"
-                  disabled={!organization || loading}
+                  disabled={!name || loading}
                 >
                   Create list
                 </Button>
@@ -171,7 +209,7 @@ export default function Lists() {
 
               <TextField
                 select
-                label="Field"
+                label="Field (eg: email)"
                 value={segmentKey}
                 onChange={(e) => setSegmentKey(e.target.value)}
                 fullWidth
@@ -185,7 +223,7 @@ export default function Lists() {
               </TextField>
 
               <TextField
-                label="Value"
+                label="Value (e.g. test@example.com)"
                 value={segmentValue}
                 onChange={(e) => setSegmentValue(e.target.value)}
                 fullWidth
@@ -213,20 +251,24 @@ export default function Lists() {
               </Typography>
 
               {lists.length === 0 ? (
-                <Typography align="center" sx={{ py: 4 }} color="text.secondary">
-                  No lists created
+                <Typography
+                  align="center"
+                  sx={{ py: 4 }}
+                  color="text.secondary"
+                >
+                  No lists yet. Create your first list to get started.
                 </Typography>
               ) : (
                 <TableContainer
                   component={Paper}
-                  sx={{ border: '1px solid #e5e7eb' }}
+                  sx={{ border: "1px solid #e5e7eb" }}
                 >
                   <Table>
                     <TableHead>
                       <TableRow>
                         <TableCell>Name</TableCell>
                         <TableCell>Organization</TableCell>
-                        <TableCell>Custom fields</TableCell>
+                        {/* <TableCell>Custom fields</TableCell> */}
                         <TableCell>Created</TableCell>
                       </TableRow>
                     </TableHead>
@@ -236,16 +278,14 @@ export default function Lists() {
                         <TableRow key={list.id}>
                           <TableCell>{list.name}</TableCell>
                           <TableCell>
-                            {list.organization?.name || '—'}
+                            {list.organization?.name || "Not Linked"}
                           </TableCell>
-                          <TableCell>
+                          {/* <TableCell>
                             {list.customFields
                               ? JSON.stringify(list.customFields)
-                              : '—'}
-                          </TableCell>
-                          <TableCell>
-                            {formatDate(list.createdAt)}
-                          </TableCell>
+                              : "—"}
+                          </TableCell> */}
+                          <TableCell>{formatDate(list.createdAt)}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
@@ -281,7 +321,7 @@ export default function Lists() {
                           <TableCell>
                             {s.customFields
                               ? JSON.stringify(s.customFields)
-                              : '—'}
+                              : "—"}
                           </TableCell>
                         </TableRow>
                       ))}

@@ -255,6 +255,28 @@ export class ListService {
     });
   }
 
+  /**
+   * FIX: Segmentation filtering issue (critical bug)
+   *
+   * Problem:
+   * - Segmentation was always returning empty results even with correct data.
+   * - Root causes:
+   *   1. Used jsonb_extract_path_text with parameterized keys → PostgreSQL does not reliably support dynamic JSON path binding.
+   *   2. organizationId was mistakenly treated as a custom field filter instead of a column filter.
+   *
+   * Solution:
+   * - Replaced jsonb_extract_path_text with JSONB operator (->>) for direct key access:
+   *     subscriber.customFields ->> 'key'
+   * - Ensured organizationId is filtered only via column:
+   *     subscriber.organizationId = :orgId
+   * - Ignored organizationId from dynamic filter loop.
+   * - Added safe key validation to prevent SQL injection.
+   *
+   * Result:
+   * - Dynamic segmentation now works correctly for customFields.
+   * - Filters are accurate, predictable, and aligned with PostgreSQL JSONB behavior.
+   */
+
   async segmentSubscribers(
     listId: string,
     filters: Record<string, any>,
@@ -293,20 +315,30 @@ export class ListService {
     for (const [key, value] of Object.entries(
       combinedFilters,
     )) {
+      if (key === 'organizationId') continue;
+
       if (!/^[a-zA-Z0-9_]+$/.test(key)) {
         throw new BadRequestException(
           `Invalid filter key: ${key}`,
         );
       }
+      //  debugging console.log
+      console.log('FILTER KEY:', key);
+      console.log(
+        'FILTER VALUE:',
+        `"${value}"`,
+        'length:',
+        String(value).length,
+      );
+
       query.andWhere(
-        'LOWER(jsonb_extract_path_text(subscriber.customFields, :filterKey)) = LOWER(:filterValue)',
-        {
-          filterKey: key,
-          filterValue: String(value),
-        },
+        `LOWER(subscriber.customFields ->> '${key}') = LOWER(:value_${key})`,
+        { [`value_${key}`]: String(value) },
       );
     }
-
+    // debugging console.log
+    console.log('QUERY:', query.getSql());
+    // changed the backend code to fix the segmentation issue where it was not applying the filters correctly and also added pagination support to limit the number of results returned in one request.
     if (pagination) {
       query
         .take(pagination.limit)

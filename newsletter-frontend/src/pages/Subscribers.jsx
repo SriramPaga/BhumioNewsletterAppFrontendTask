@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from "react";
 import {
   Box,
   Grid,
@@ -17,14 +17,14 @@ import {
   Chip,
   MenuItem,
   Divider,
-} from '@mui/material';
-import api from '../services/api.js';
-import { formatDate } from '../utils/format.js';
-import { useAuth } from '../hooks/useAuth.jsx';
-import { useApi } from '../hooks/useApi.js';
+} from "@mui/material";
+import api from "../services/api.js";
+import { formatDate } from "../utils/format.js";
+import { useAuth } from "../hooks/useAuth.jsx";
+import { useApi } from "../hooks/useApi.js";
 
 function CustomFieldInputs({ fields, onChange }) {
-  const addField = () => onChange([...fields, { key: '', value: '' }]);
+  const addField = () => onChange([...fields, { key: "", value: "" }]);
 
   const updateField = (index, key, value) => {
     const next = [...fields];
@@ -33,7 +33,7 @@ function CustomFieldInputs({ fields, onChange }) {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
       {fields.map((field, index) => (
         <Grid container spacing={1} key={index}>
           <Grid item xs={5}>
@@ -41,7 +41,7 @@ function CustomFieldInputs({ fields, onChange }) {
               label="Field name"
               value={field.key}
               fullWidth
-              onChange={(e) => updateField(index, 'key', e.target.value)}
+              onChange={(e) => updateField(index, "key", e.target.value)}
             />
           </Grid>
           <Grid item xs={5}>
@@ -49,11 +49,13 @@ function CustomFieldInputs({ fields, onChange }) {
               label="Field value"
               value={field.value}
               fullWidth
-              onChange={(e) => updateField(index, 'value', e.target.value)}
+              onChange={(e) => updateField(index, "value", e.target.value)}
             />
           </Grid>
           <Grid item xs={2}>
-            <Button onClick={() => onChange(fields.filter((_, i) => i !== index))}>
+            <Button
+              onClick={() => onChange(fields.filter((_, i) => i !== index))}
+            >
               Remove
             </Button>
           </Grid>
@@ -72,12 +74,12 @@ export default function Subscribers() {
 
   const [subscribers, setSubscribers] = useState([]);
   const [lists, setLists] = useState([]);
-  const [email, setEmail] = useState('');
-  const [publicKey, setPublicKey] = useState('');
+  const [email, setEmail] = useState("");
+  const [publicKey, setPublicKey] = useState("");
   const [customFields, setCustomFields] = useState([]);
   const [csvFile, setCsvFile] = useState(null);
-  const [search, setSearch] = useState('');
-  const [selectedListId, setSelectedListId] = useState('');
+  const [search, setSearch] = useState("");
+  const [selectedListId, setSelectedListId] = useState("");
 
   useEffect(() => {
     const load = async () => {
@@ -87,7 +89,7 @@ export default function Subscribers() {
       ]);
       setSubscribers(subsRes.data);
       setLists(listsRes.data);
-      setSelectedListId(listsRes.data[0]?.id || '');
+      setSelectedListId(listsRes.data[0]?.id || "");
     };
     load();
   }, [callApi]);
@@ -95,14 +97,19 @@ export default function Subscribers() {
   const filteredSubscribers = useMemo(
     () =>
       subscribers.filter((s) =>
-        s.email.toLowerCase().includes(search.toLowerCase())
+        s.email.toLowerCase().includes(search.toLowerCase()),
       ),
-    [subscribers, search]
+    [subscribers, search],
   );
 
   const handleCreate = async (e) => {
     e.preventDefault();
-    if (!organization || !selectedListId) return;
+    console.log("Submit triggered");
+    if (!selectedListId) {
+      console.log("No list selected");
+      return;
+    }
+    console.log("Proceeding to create subscriber...");
 
     const customObject = customFields.reduce((acc, field) => {
       if (field.key && field.value) acc[field.key] = field.value;
@@ -111,27 +118,27 @@ export default function Subscribers() {
 
     const payload = {
       email,
-      organizationId: organization.id,
+      // organizationId: organization.id,
       customFields: {
         ...customObject,
         publicKey: publicKey || undefined,
       },
     };
 
-    await callApi(() => api.createSubscriber(payload), 'Subscriber added');
+    await callApi(() => api.createSubscriber(payload), "Subscriber added");
 
     const subsRes = await callApi(() => api.getSubscribers());
     setSubscribers(subsRes.data);
 
-    setEmail('');
-    setPublicKey('');
+    setEmail("");
+    setPublicKey("");
     setCustomFields([]);
   };
 
   const handleUpload = async () => {
     if (!csvFile || !selectedListId) return;
 
-    await callApi(() => api.importCsv(selectedListId, csvFile), 'CSV uploaded');
+    await callApi(() => api.importCsv(selectedListId, csvFile), "CSV uploaded");
 
     const subsRes = await callApi(() => api.getSubscribers());
     setSubscribers(subsRes.data);
@@ -161,7 +168,7 @@ export default function Subscribers() {
               <Box
                 component="form"
                 onSubmit={handleCreate}
-                sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+                sx={{ display: "flex", flexDirection: "column", gap: 2 }}
               >
                 <TextField
                   label="Email"
@@ -220,9 +227,7 @@ export default function Subscribers() {
                   hidden
                   type="file"
                   accept=".csv"
-                  onChange={(e) =>
-                    setCsvFile(e.target.files?.[0] || null)
-                  }
+                  onChange={(e) => setCsvFile(e.target.files?.[0] || null)}
                 />
               </Button>
 
@@ -264,7 +269,7 @@ export default function Subscribers() {
               {/* Table */}
               <TableContainer
                 component={Paper}
-                sx={{ border: '1px solid #e5e7eb' }}
+                sx={{ border: "1px solid #e5e7eb" }}
               >
                 <Table>
                   <TableHead>
@@ -280,9 +285,7 @@ export default function Subscribers() {
                     {filteredSubscribers.map((s) => (
                       <TableRow key={s.id}>
                         <TableCell>{s.email}</TableCell>
-                        <TableCell>
-                          {s.organization?.name || '—'}
-                        </TableCell>
+                        <TableCell>{s.organization?.name || "—"}</TableCell>
                         <TableCell>
                           {Object.entries(s.customFields || {}).map(
                             ([k, v]) => (
@@ -292,12 +295,10 @@ export default function Subscribers() {
                                 size="small"
                                 sx={{ mr: 0.5, mb: 0.5 }}
                               />
-                            )
+                            ),
                           )}
                         </TableCell>
-                        <TableCell>
-                          {formatDate(s.createdAt)}
-                        </TableCell>
+                        <TableCell>{formatDate(s.createdAt)}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

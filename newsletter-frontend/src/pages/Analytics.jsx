@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
   Box,
   Grid,
@@ -13,13 +13,13 @@ import {
   TableRow,
   Paper,
   Alert,
-} from '@mui/material';
-import api from '../services/api.js';
+} from "@mui/material";
+import api from "../services/api.js";
 
 export default function Analytics() {
   const [campaigns, setCampaigns] = useState([]);
   const [stats, setStats] = useState([]);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     async function load() {
@@ -27,7 +27,9 @@ export default function Analytics() {
         const campaignsRes = await api.getCampaigns();
         setCampaigns(campaignsRes.data);
         const statsPromises = campaignsRes.data.map((campaign) =>
-          api.getCampaignStats(campaign.id).then((res) => ({ ...res.data, subject: campaign.subject })),
+          api
+            .getCampaignStats(campaign.id)
+            .then((res) => ({ ...res.data, subject: campaign.subject })),
         );
         const resolved = await Promise.all(statsPromises);
         setStats(resolved);
@@ -40,10 +42,23 @@ export default function Analytics() {
 
   return (
     <Box>
+      <Alert severity="info" sx={{ mb: 2 }}>
+        Analytics requires real email delivery and user interaction
+        (opens/clicks). In local setup, metrics may remain 0.
+      </Alert>
       <Typography variant="h4" mb={2}>
         Analytics
       </Typography>
-      {message && <Alert severity="error" sx={{ mb: 2 }}>{message}</Alert>}
+      {message && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {message}
+        </Alert>
+      )}
+      {campaigns.length === 0 && (
+        <Typography sx={{ mt: 2 }} color="text.secondary">
+          No campaigns found. Create and send a campaign to see analytics.
+        </Typography>
+      )}
       <Grid container spacing={2}>
         <Grid item xs={12} md={4}>
           <Card>
@@ -52,10 +67,13 @@ export default function Analytics() {
               <Typography variant="h3" sx={{ mt: 2 }}>
                 {campaigns.length}
               </Typography>
-              <Typography color="text.secondary">Total campaigns loaded from backend.</Typography>
+              <Typography color="text.secondary">
+                Total campaigns loaded from backend.
+              </Typography>
             </CardContent>
           </Card>
         </Grid>
+
         <Grid item xs={12} md={8}>
           <Card>
             <CardContent>
@@ -64,19 +82,37 @@ export default function Analytics() {
                 <Grid item xs={4}>
                   <Card variant="outlined" sx={{ p: 2 }}>
                     <Typography color="text.secondary">Opens</Typography>
-                    <Typography variant="h5">{stats.reduce((sum, item) => sum + Number(item.opens || 0), 0)}</Typography>
+                    <Typography variant="h5">
+                      {(stats || []).reduce(
+                        (sum, item) => sum + Number(item.opens || 0),
+                        0,
+                      )}
+                    </Typography>
                   </Card>
                 </Grid>
                 <Grid item xs={4}>
                   <Card variant="outlined" sx={{ p: 2 }}>
                     <Typography color="text.secondary">Clicks</Typography>
-                    <Typography variant="h5">{stats.reduce((sum, item) => sum + Number(item.clicks || 0), 0)}</Typography>
+                    <Typography variant="h5">
+                      {stats.reduce(
+                        (sum, item) => sum + Number(item.clicks || 0),
+                        0,
+                      )}
+                    </Typography>
                   </Card>
                 </Grid>
                 <Grid item xs={4}>
                   <Card variant="outlined" sx={{ p: 2 }}>
-                    <Typography color="text.secondary">Unique subscribers</Typography>
-                    <Typography variant="h5">{stats.reduce((sum, item) => sum + Number(item.uniqueSubscribers || 0), 0)}</Typography>
+                    <Typography color="text.secondary">
+                      Unique subscribers
+                    </Typography>
+                    <Typography variant="h5">
+                      {stats.reduce(
+                        (sum, item) =>
+                          sum + Number(item.uniqueSubscribers || 0),
+                        0,
+                      )}
+                    </Typography>
                   </Card>
                 </Grid>
               </Grid>
@@ -84,6 +120,16 @@ export default function Analytics() {
           </Card>
         </Grid>
       </Grid>
+      {stats.length > 0 &&
+        stats.every(
+          (item) =>
+            Number(item.opens || 0) === 0 && Number(item.clicks || 0) === 0,
+        ) && (
+          <Typography sx={{ mt: 3 }} color="text.secondary">
+            No analytics data yet. Send a campaign and interact with emails to
+            see results.
+          </Typography>
+        )}
       <Card sx={{ mt: 2 }}>
         <CardContent>
           <Typography variant="h6">Campaign stats</Typography>

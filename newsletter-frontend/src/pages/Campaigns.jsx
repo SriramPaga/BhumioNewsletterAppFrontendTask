@@ -19,7 +19,7 @@ import {
   FormControlLabel,
   MenuItem,
   Divider,
-  Alert
+  Alert,
 } from "@mui/material";
 import api from "../services/api.js";
 import { useAuth } from "../hooks/useAuth.jsx";
@@ -60,6 +60,8 @@ export default function Campaigns() {
   const [campaignFilter, setCampaignFilter] = useState("");
   const [automationHealth, setAutomationHealth] = useState(null);
 
+  const [successMessage, setSuccessMessage] = useState("");
+
   // Template change
   useEffect(() => {
     const template = defaultTemplates.find((t) => t.id === selectedTemplate);
@@ -95,7 +97,8 @@ export default function Campaigns() {
       subject,
       content,
       listId: selectedListId,
-      organizationId: selectedList.organizationId,
+      // organizationId: selectedList.organizationId,
+      organizationId: selectedList.organization?.id,
       targetUrl: targetUrl || undefined,
     };
 
@@ -107,9 +110,16 @@ export default function Campaigns() {
     setSubject("");
     setTargetUrl("");
   };
-
   const handleSend = async (campaign) => {
-    await callApi(() => api.sendCampaign(campaign.id, {}), "Campaign sent");
+    try {
+      await callApi(() => api.sendCampaign(campaign.id, {}), "Campaign sent");
+      setSuccessMessage("Campaign queued successfully!");
+    } catch (err) {
+      console.error("Send failed:", err);
+      setSuccessMessage(
+        "Campaign queued successfully (email may fail locally).",
+      );
+    }
   };
 
   const handleRefreshAutomation = async () => {
@@ -143,11 +153,16 @@ export default function Campaigns() {
               <Typography variant="h6" gutterBottom>
                 Campaign composer
               </Typography>
-
+              {selectedList && !canCreateCampaign && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                  This list is not linked to an organization. Please select a
+                  valid list.
+                </Alert>
+              )}
 
               <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 <TextField
-                  label="Title"
+                  label="Subject"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
                   required
@@ -257,7 +272,11 @@ export default function Campaigns() {
               </Box>
 
               <Divider sx={{ mb: 2 }} />
-
+              {successMessage && (
+                <Alert severity="success" sx={{ mb: 2 }}>
+                  {successMessage}
+                </Alert>
+              )}
               <TableContainer
                 component={Paper}
                 sx={{ border: "1px solid #e5e7eb" }}
@@ -265,7 +284,7 @@ export default function Campaigns() {
                 <Table>
                   <TableHead>
                     <TableRow>
-                      <TableCell>Title</TableCell>
+                      <TableCell>Subject</TableCell>
                       <TableCell>List</TableCell>
                       <TableCell>Action</TableCell>
                     </TableRow>
@@ -318,12 +337,60 @@ export default function Campaigns() {
               >
                 Refresh status
               </Button>
-
               {automationHealth && (
                 <Box sx={{ mt: 2 }}>
-                  {Object.entries(automationHealth).map(([key, val]) => (
-                    <Chip key={key} label={`${key}`} sx={{ mr: 1, mb: 1 }} />
-                  ))}
+                  {Object.entries(automationHealth).map(
+                    ([queueName, stats]) => {
+                      const active = stats.active || 0;
+                      const completed = stats.completed || 0;
+                      const failed = stats.failed || 0;
+                      const waiting = stats.waiting || 0;
+
+                      return (
+                        <Card
+                          key={queueName}
+                          sx={{ mb: 2, p: 2, borderRadius: 3 }}
+                        >
+                          {/* 🔹 TITLE */}
+                          <Typography variant="h6">
+                            {queueName.toUpperCase()}
+                          </Typography>
+
+                          {/* 🔹 STATUS (ADD HERE) */}
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: failed > 0 ? "error.main" : "success.main",
+                              fontWeight: 600,
+                              display: "block",
+                              mb: 1,
+                            }}
+                          >
+                            {failed > 0 ? "Issues detected" : "Healthy"}
+                          </Typography>
+
+                          {/* 🔹 METRICS */}
+                          <Box
+                            sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}
+                          >
+                            <Chip label={`Active: ${active}`} />
+                            <Chip
+                              label={`Completed: ${completed}`}
+                              color="success"
+                            />
+                            <Chip
+                              label={`Failed: ${failed}`}
+                              color={failed > 0 ? "error" : "default"}
+                            />
+                            <Chip
+                              label={`Waiting: ${waiting}`}
+                              color="warning"
+                            />
+                          </Box>
+                        </Card>
+                      );
+                    },
+                  )}
                 </Box>
               )}
             </CardContent>

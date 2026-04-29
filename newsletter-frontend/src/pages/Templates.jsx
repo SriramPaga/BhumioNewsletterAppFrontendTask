@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -12,21 +12,32 @@ import {
   ListItemButton,
   ListItemText,
   Divider,
-} from '@mui/material';
+} from "@mui/material";
 
-const STORAGE_KEY = 'newsletter_templates';
+const STORAGE_KEY = "newsletter_templates";
+const DRAFT_KEY = "newsletter_template_draft";
 
 export default function Templates() {
   const [templates, setTemplates] = useState([]);
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
   const [selected, setSelected] = useState(null);
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) setTemplates(JSON.parse(stored));
   }, []);
-
+  useEffect(() => {
+    const draft = localStorage.getItem(DRAFT_KEY);
+    if (draft) {
+      const parsed = JSON.parse(draft);
+      setTitle(parsed.title || "");
+      setContent(parsed.content || "");
+    }
+  }, []);
+  useEffect(() => {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({ title, content }));
+  }, [title, content]);
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(templates));
   }, [templates]);
@@ -34,14 +45,16 @@ export default function Templates() {
   const handleSave = () => {
     if (!title || !content) return;
 
-    const next = [
-      ...templates,
-      { id: Date.now().toString(), title, content },
-    ];
+    const next = [...templates, { id: Date.now().toString(), title, content }];
 
     setTemplates(next);
-    setTitle('');
-    setContent('');
+
+    // clear editor
+    setTitle("");
+    setContent("");
+
+    // 🔥 clear draft from storage
+    localStorage.removeItem(DRAFT_KEY);
   };
 
   return (
@@ -63,7 +76,7 @@ export default function Templates() {
                 New template
               </Typography>
 
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                 <TextField
                   label="Title"
                   value={title}
@@ -112,7 +125,7 @@ export default function Templates() {
                           primary={template.title}
                           secondary={
                             template.content.length > 80
-                              ? template.content.slice(0, 80) + '...'
+                              ? template.content.slice(0, 80) + "..."
                               : template.content
                           }
                         />
@@ -144,17 +157,17 @@ export default function Templates() {
 
                   <Box
                     sx={{
-                      border: '1px solid #e5e7eb',
+                      border: "1px solid #e5e7eb",
                       borderRadius: 1,
                       p: 2,
-                      backgroundColor: '#fff',
+                      backgroundColor: "#fff",
                     }}
                   >
                     <Typography variant="subtitle2" sx={{ mb: 1 }}>
                       {selected.title}
                     </Typography>
 
-                    <Typography sx={{ whiteSpace: 'pre-wrap' }}>
+                    <Typography sx={{ whiteSpace: "pre-wrap" }}>
                       {selected.content}
                     </Typography>
                   </Box>
