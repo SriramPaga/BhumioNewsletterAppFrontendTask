@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NewsLetter | Professional Marketing Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --primary: #1e293b;
+      --primary-hover: #0f172a;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --danger: #ef4444;
+      --success: #10b981;
+      --accent: #1e293b;
+    }
+
+    * { box-sizing: border-box; transition: all 0.2s ease; }
+    
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-bottom: 5rem;
+    }
+
+    .container { width: 100%; max-width: 900px; padding: 0 1rem; }
+
+    header {
+      width: 100%;
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 0;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      margin-bottom: 2rem;
+      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    .brand {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      text-decoration: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    nav { display: flex; gap: 0.5rem; }
+    
+    .nav-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.875rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+    }
+
+    .nav-link:hover { color: var(--text); background: var(--bg); }
+    .nav-link.active { color: var(--primary); background: #f1f5f9; }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+
+    label { display: block; color: var(--text-muted); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 0.05em; }
+    input, select, textarea {
+      width: 100%;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 0.75rem;
+      color: var(--text);
+      font-family: inherit;
+      margin-bottom: 1rem;
+    }
+    textarea { min-height: 120px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 2px rgba(30, 41, 59, 0.2); }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    button:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    button.secondary { background: white; border: 1px solid var(--border); color: var(--text); }
+    button.secondary:hover { background: var(--bg); }
+    button.danger { background: var(--danger); }
+
+    .hidden { display: none !important; }
+
+    #toast-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 100; display: flex; flex-direction: column; gap: 1rem; }
+    .toast { padding: 1rem 1.5rem; border-radius: 0.5rem; background: white; border: 1px solid var(--border); color: var(--text); box-shadow: 0 10px 15px -1px rgba(0, 0, 0, 0.1); animation: slideIn 0.3s ease-out; border-left: 4px solid var(--primary); }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .stat-box { padding: 1.25rem; background: var(--bg); border-radius: 0.75rem; border: 1px solid var(--border); text-align: center; }
+    .stat-val { font-size: 1.75rem; font-weight: 800; color: var(--primary); margin-bottom: 0.25rem; }
+    .stat-lab { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.1em; }
+
+    pre { background: #0f172a; padding: 1rem; border-radius: 0.5rem; font-size: 0.75rem; color: #10b981; overflow: auto; border: 1px solid var(--border); margin: 0; }
+    
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem;
+      background: white;
+      border-radius: 0.5rem;
+      margin-bottom: 0.5rem;
+      border: 1px solid var(--border);
+    }
+    .list-item:hover { border-color: var(--primary); background: #fdfdfd; }
+
+    .upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 1rem;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      margin-bottom: 1rem;
+      background: var(--bg);
+    }
+    .upload-area:hover { border-color: var(--primary); background: white; }
+    
+    .status-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+      background: #94a3b8;
+    }
+    .status-dot.online { background: var(--success); box-shadow: 0 0 8px var(--success); }
+    .status-dot.connecting { background: #facc15; }
+    .status-dot.offline { background: var(--danger); }
+
+    @keyframes scalePulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); color: var(--primary); }
+      100% { transform: scale(1); }
+    }
+    .pulse-anim { animation: scalePulse 0.4s ease-out; }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="nav-container">
+      <div class="brand" onclick="switchView('overview')">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+        NewsLetter
+      </div>
+      <nav id="main-nav" class="hidden">
+        <div class="nav-link active" onclick="switchView('overview')">Overview</div>
+        <div class="nav-link" onclick="switchView('audience')">Audience</div>
+        <div class="nav-link" onclick="switchView('campaigns')">Campaigns</div>
+        <button class="secondary danger" id="btnLogout" style="padding: 0.4rem 0.8rem; font-size: 0.75rem;">Logout</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- AUTH VIEW -->
+    <div id="view-auth">
+      <div class="card" style="max-width: 450px; margin: 4rem auto;">
+        <div class="card-header"><h3>Login</h3></div>
+        <label>Admin Email</label>
+        <input type="email" id="loginEmail" placeholder="admin@gmail.com" />
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="••••••••" />
+        <button id="btnLogin">Sign In to Dashboard</button>
+      </div>
+    </div>
+
+    <!-- OVERVIEW VIEW -->
+    <div id="view-overview" class="hidden">
+      <div class="card">
+        <div class="card-header"><h3>Organization Overview</h3></div>
+        <label>Selected Organization</label>
+        <select id="orgSelector"><option value="">Loading Organizations...</option></select>
+        
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-val" id="stat-total-lists">0</div>
+            <div class="stat-lab">Total Lists</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="stat-total-campaigns">0</div>
+            <div class="stat-lab">Active Campaigns</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-val" id="stat-live-events">0</div>
+            <div class="stat-lab">Live Events</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+           <h3>Live Activity Stream</h3>
+           <span id="wsStatusBadge" style="font-size: 0.7rem; background: #f1f5f9; color: #475569; padding: 2px 10px; border-radius: 99px; font-weight: 700; display: flex; align-items: center; gap: 4px;">
+             <span class="status-dot" id="wsConnDot"></span>
+             <span id="wsStatusText">DISCONNECTED</span>
+           </span>
+        </div>
+        <pre id="wsLog" style="height: 300px;"></pre>
+      </div>
+    </div>
+
+    <!-- AUDIENCE VIEW -->
+    <div id="view-audience" class="hidden">
+      <div class="grid">
+        <div class="card">
+          <div class="card-header"><h3>Create New List</h3></div>
+          <label>List Name</label>
+          <input type="text" id="newListName" placeholder="e.g. Premium Customers" />
+          <label>Filter Rules (JSON Optional)</label>
+          <textarea id="newListFields" placeholder='{"city": "Mumbai"}'></textarea>
+          <button id="btnCreateList">Create List</button>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h3>Import Subscribers</h3></div>
+          <label>Target List</label>
+          <select id="importListSelector"><option value="">Select a List...</option></select>
+          <div class="upload-area" onclick="document.getElementById('csvFileInput').click()">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📁</div>
+            <div style="font-weight: 600; color: var(--text);">Click to Upload CSV</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;">Format: email, field1, field2...</div>
+            <input type="file" id="csvFileInput" class="hidden" accept=".csv" />
+          </div>
+          <div id="fileInfo" class="hidden" style="margin-bottom: 1rem; text-align: center; font-size: 0.875rem; color: var(--primary); font-weight: 600;"></div>
+          <button id="btnImportCsv" disabled>Import Data</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h3>Your Subscriber Lists</h3></div>
+        <div id="listsContainer"></div>
+      </div>
+    </div>
+
+    <!-- CAMPAIGNS VIEW -->
+    <div id="view-campaigns" class="hidden">
+      <div class="grid">
+        <div class="card">
+          <div class="card-header"><h3>Create Campaign Draft</h3></div>
+          <label>Draft Title</label>
+          <input type="text" id="newCampTitle" placeholder="e.g. Diwali Launch" />
+          <label>Email Subject</label>
+          <input type="text" id="newCampSubject" placeholder="Amazing offers inside!" />
+          <label>Email Content (HTML)</label>
+          <textarea id="newCampContent" placeholder="<h1>Hello!</h1> <p>Check out our products...</p>"></textarea>
+          <label>Target Audience List</label>
+          <select id="newCampListSelector"><option value="">Select Audience...</option></select>
+          <button id="btnCreateCamp">Save Draft</button>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="card-header"><h3>Dispatch Campaign</h3></div>
+            <label>Select Draft</label>
+            <select id="dispatchCampSelector"><option value="">Refresh and Select...</option></select>
+            <label>Segment Filter (Optional)</label>
+            <input type="text" id="segmentInput" placeholder="e.g. premium-tier" />
+            <button id="btnSend">🚀 Trigger Dispatch</button>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><h3>Campaign Analytics</h3></div>
+            <div id="campaignStatusInfo" style="font-size: 0.875rem; color: var(--text-muted);">
+              Select a campaign above to view stats.
+            </div>
+            <div id="campStatsDisplay" class="hidden" style="margin-top: 1.5rem;">
+                <div class="stats-grid">
+                    <div class="stat-box"><div class="stat-val" id="stat-opens">0</div><div class="stat-lab">Opens</div></div>
+                    <div class="stat-box"><div class="stat-val" id="stat-clicks">0</div><div class="stat-lab">Clicks</div></div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script>
+    const API = window.location.origin + '/api';
+    
+    let state = {
+      accessToken: localStorage.getItem('accessToken'),
+      refreshToken: localStorage.getItem('refreshToken'),
+      user: JSON.parse(localStorage.getItem('user') || 'null'),
+      currentOrgId: localStorage.getItem('currentOrgId'),
+      tokens: { access: '', refresh: '' },
+      wsSocket: null
+    };
+
+    async function apiFetch(path, options = {}) {
+      options.headers = { 'Content-Type': 'application/json', ...options.headers };
+      if (state.accessToken) options.headers['Authorization'] = `Bearer ${state.accessToken}`;
+
+      let r = await fetch(API + path, options);
+      if (r.status === 401 && state.refreshToken) {
+        const refreshResp = await fetch(API + '/users/refresh', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refreshToken: state.refreshToken })
+        });
+        if (refreshResp.ok) {
+          const newData = await refreshResp.json();
+          saveSession(newData.accessToken, newData.refreshToken, newData.user || state.user);
+          options.headers['Authorization'] = `Bearer ${state.accessToken}`;
+          r = await fetch(API + path, options);
+        } else {
+          logout();
+          throw new Error('Session Expired');
+        }
+      }
+      const data = await r.json();
+      if (!r.ok) throw new Error(data.message || 'API Error');
+      return data;
+    }
+
+    function saveSession(access, refresh, user) {
+      state.accessToken = access; state.refreshToken = refresh; state.user = user;
+      localStorage.setItem('accessToken', access); localStorage.setItem('refreshToken', refresh);
+      localStorage.setItem('user', JSON.stringify(user));
+      render();
+    }
+
+    function logout() {
+      apiFetch('/users/logout', { method: 'POST' }).catch(() => {});
+      localStorage.clear();
+      state.accessToken = null; state.wsSocket?.disconnect(); state.wsSocket = null;
+      render();
+    }
+
+    function showToast(msg, type = 'success') {
+      const c = document.getElementById('toast-container');
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.style.borderLeftColor = type === 'danger' ? 'var(--danger)' : 'var(--primary)';
+      t.textContent = msg;
+      c.appendChild(t); setTimeout(() => t.remove(), 4000);
+    }
+
+    function render() {
+      const views = ['auth', 'overview', 'audience', 'campaigns'];
+      views.forEach(v => document.getElementById('view-' + v).classList.add('hidden'));
+      document.getElementById('main-nav').classList.add('hidden');
+
+      if (state.accessToken) {
+        document.getElementById('main-nav').classList.remove('hidden');
+        switchView(localStorage.getItem('activeTab') || 'overview');
+      } else {
+        document.getElementById('view-auth').classList.remove('hidden');
+      }
+    }
+
+    function switchView(viewId) {
+      const views = ['overview', 'audience', 'campaigns'];
+      views.forEach(v => {
+        document.getElementById('view-' + v).classList.add('hidden');
+        document.querySelectorAll('.nav-link').forEach(l => {
+            l.classList.remove('active');
+        });
+      });
+      
+      document.getElementById('view-' + viewId).classList.remove('hidden');
+      document.querySelectorAll('.nav-link').forEach(l => {
+          if(l.textContent.toLowerCase() === viewId) l.classList.add('active');
+      });
+      
+      localStorage.setItem('activeTab', viewId);
+      if (viewId === 'overview') initOverview();
+      if (viewId === 'audience') initAudience();
+      if (viewId === 'campaigns') initCampaigns();
+    }
+
+    async function initOverview() {
+      await fetchOrgs();
+      if (state.accessToken) connectWS();
+    }
+
+    async function initAudience() {
+      await fetchLists();
+    }
+
+    async function initCampaigns() {
+      await fetchListsForCampaigns();
+      await fetchCampaigns();
+    }
+
+    async function fetchOrgs() {
+      try {
+        const orgs = await apiFetch('/organizations');
+        const sel = document.getElementById('orgSelector');
+        sel.innerHTML = '';
+        orgs.forEach(o => {
+          const opt = new Option(o.name, o.id);
+          if (o.id === state.currentOrgId) opt.selected = true;
+          sel.add(opt);
+        });
+        if (!state.currentOrgId && orgs[0]) state.currentOrgId = orgs[0].id;
+      } catch (e) { showToast(e.message, 'danger'); }
+    }
+
+    async function refreshDashboardData() {
+        const viewId = localStorage.getItem('activeTab') || 'overview';
+        if (viewId === 'audience') await fetchLists();
+        if (viewId === 'campaigns') {
+            await fetchListsForCampaigns();
+            await fetchCampaigns();
+        }
+    }
+
+    async function fetchLists() {
+      try {
+        const orgQuery = state.currentOrgId ? `?organizationId=${state.currentOrgId}` : '';
+        const lists = await apiFetch('/lists' + orgQuery);
+        const cont = document.getElementById('listsContainer');
+        const sel = document.getElementById('importListSelector');
+        cont.innerHTML = ''; sel.innerHTML = '<option value="">Target List...</option>';
+        
+        lists.forEach(l => {
+          const div = document.createElement('div');
+          div.className = 'list-item';
+          div.innerHTML = `<div><strong>${l.name}</strong><br/><small style="color:var(--text-muted)">ID: ${l.id} | Org: ${l.organization?.name || 'Unknown'}</small></div>`;
+          cont.appendChild(div);
+          sel.add(new Option(l.name, l.id));
+        });
+        document.getElementById('stat-total-lists').textContent = lists.length;
+      } catch (e) { showToast(e.message, 'danger'); }
+    }
+
+    async function fetchListsForCampaigns() {
+        try {
+            const orgQuery = state.currentOrgId ? `?organizationId=${state.currentOrgId}` : '';
+            const lists = await apiFetch('/lists' + orgQuery);
+            const sel = document.getElementById('newCampListSelector');
+            sel.innerHTML = '<option value="">Select Audience...</option>';
+            lists.forEach(l => sel.add(new Option(l.name, l.id)));
+        } catch(e) {}
+    }
+
+    async function fetchCampaigns() {
+      try {
+        const cams = await apiFetch('/campaigns');
+        const sel = document.getElementById('dispatchCampSelector');
+        sel.innerHTML = '<option value="">Select Draft...</option>';
+        cams.forEach(c => sel.add(new Option(c.subject || 'Untitled Draft', c.id)));
+        document.getElementById('stat-total-campaigns').textContent = cams.length;
+      } catch (e) {}
+    }
+
+    function connectWS() {
+        if (state.wsSocket) return;
+        const io = window.io;
+        state.wsSocket = io(window.location.origin + '/stats', { 
+            auth: { token: state.accessToken }, 
+            transports: ['websocket'] 
+        });
+
+        const log = document.getElementById('wsLog');
+        const liveEventCounter = document.getElementById('stat-live-events');
+        const dot = document.getElementById('wsConnDot');
+        const text = document.getElementById('wsStatusText');
+        const badge = document.getElementById('wsStatusBadge');
+
+        function animatePulse(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.classList.add('pulse-anim');
+            setTimeout(() => el.classList.remove('pulse-anim'), 400);
+        }
+
+        state.wsSocket.on('connect', () => {
+             log.textContent = `[${new Date().toLocaleTimeString()}] System: Channel established.\n` + log.textContent;
+             dot.className = 'status-dot online';
+             text.textContent = 'ONLINE';
+             badge.style.background = '#dcfce7';
+             badge.style.color = '#166534';
+             
+             if (state.currentOrgId) {
+                state.wsSocket.emit('joinTenant', state.currentOrgId);
+             }
+        });
+
+        state.wsSocket.on('click.processed', d => {
+            const time = new Date().toLocaleTimeString();
+            const label = d.eventType === 'open' ? 'OPEN' : 'CLICK';
+            log.textContent = `[${time}] ${label}: Event registered from Subscriber ${d.subscriberId.slice(0, 8)}\n` + log.textContent;
+            
+            // Increment global overview counter
+            liveEventCounter.textContent = parseInt(liveEventCounter.textContent) + 1;
+            animatePulse('stat-live-events');
+
+            // REACTIVE UPDATE: If current dispatch selected matches this campaign
+            const selectedCid = document.getElementById('dispatchCampSelector').value;
+            if (selectedCid === d.campaignId) {
+                const targetId = d.eventType === 'open' ? 'stat-opens' : 'stat-clicks';
+                const el = document.getElementById(targetId);
+                if (el) {
+                    el.textContent = parseInt(el.textContent) + 1;
+                    animatePulse(targetId);
+                }
+            }
+        });
+
+        state.wsSocket.on('email.processed', d => {
+            const time = new Date().toLocaleTimeString();
+            log.textContent = `[${time}] DISPATCH: Email successfully delivered to ${d.recipient || d.to}\n` + log.textContent;
+            animatePulse('wsLog');
+        });
+        
+        state.wsSocket.on('disconnect', () => {
+             log.textContent = `[${new Date().toLocaleTimeString()}] System: Connection lost. Reconnecting...\n` + log.textContent;
+             dot.className = 'status-dot offline';
+             text.textContent = 'OFFLINE';
+             badge.style.background = '#fee2e2';
+             badge.style.color = '#991b1b';
+        });
+
+        state.wsSocket.on('connect_error', () => {
+             dot.className = 'status-dot connecting';
+             text.textContent = 'CONNECTING...';
+             badge.style.background = '#fef9c3';
+             badge.style.color = '#854d0e';
+        });
+    }
+
+    document.getElementById('btnLogin').onclick = async () => {
+      const email = document.getElementById('loginEmail').value;
+      const pass = document.getElementById('loginPass').value;
+      try {
+        const d = await apiFetch('/users/login', { method: 'POST', body: JSON.stringify({ email, password: pass }) });
+        saveSession(d.accessToken, d.refreshToken, d.user);
+        showToast('System Authenticated');
+      } catch (e) { showToast(e.message, 'danger'); }
+    };
+
+    document.getElementById('btnCreateList').onclick = async () => {
+      const name = document.getElementById('newListName').value.trim();
+      const fieldsStr = document.getElementById('newListFields').value.trim();
+      if (!name) return showToast('Name required', 'danger');
+      try {
+        const customFields = fieldsStr ? JSON.parse(fieldsStr) : {};
+        await apiFetch('/lists', { method: 'POST', body: JSON.stringify({ name, customFields, organizationId: state.currentOrgId }) });
+        showToast('List created'); fetchLists();
+      } catch (e) { showToast('Invalid JSON or API error', 'danger'); }
+    };
+
+    document.getElementById('csvFileInput').onchange = (e) => {
+      const file = e.target.files[0];
+      const info = document.getElementById('fileInfo');
+      if (file) {
+        info.textContent = `Selected: ${file.name}`; info.classList.remove('hidden');
+        document.getElementById('btnImportCsv').disabled = false;
+      }
+    };
+
+    document.getElementById('btnImportCsv').onclick = async () => {
+      const listId = document.getElementById('importListSelector').value;
+      const file = document.getElementById('csvFileInput').files[0];
+      if (!listId || !file) return showToast('List and File required', 'danger');
+
+      const formData = new FormData(); formData.append('file', file);
+      try {
+        const r = await fetch(API + `/lists/${listId}/import-csv`, { 
+            method: 'POST', 
+            headers: { 'Authorization': `Bearer ${state.accessToken}` },
+            body: formData 
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.message);
+        showToast(d.message);
+        document.getElementById('csvFileInput').value = '';
+        document.getElementById('fileInfo').classList.add('hidden');
+      } catch (e) { showToast(e.message, 'danger'); }
+    };
+
+    document.getElementById('btnCreateCamp').onclick = async () => {
+      const subject = document.getElementById('newCampSubject').value.trim();
+      const content = document.getElementById('newCampContent').value.trim();
+      const listId = document.getElementById('newCampListSelector').value;
+
+      if (!subject || !content) {
+        return showToast('Subject and Content required', 'danger');
+      }
+
+      if (!listId) {
+        return showToast('Target Audience List required', 'danger');
+      }
+
+      if (!state.currentOrgId) {
+        return showToast('No organization selected. Please refresh.', 'danger');
+      }
+
+      try {
+        await apiFetch('/campaigns', { 
+            method: 'POST', 
+            body: JSON.stringify({ 
+                subject, 
+                content, 
+                listId, 
+                organizationId: state.currentOrgId 
+            }) 
+        });
+        showToast('Campaign draft saved'); 
+        fetchCampaigns();
+      } catch (e) { 
+        showToast(e.message, 'danger'); 
+      }
+    };
+
+    document.getElementById('btnSend').onclick = async () => {
+      const cid = document.getElementById('dispatchCampSelector').value;
+      const segmentRaw = document.getElementById('segmentInput').value.trim();
+      if (!cid) return showToast('Select a draft', 'danger');
+      
+      let filters = {};
+      if (segmentRaw) {
+        if (segmentRaw.includes(':')) {
+            const [k, v] = segmentRaw.split(':').map(s => s.trim());
+            filters[k] = v;
+        } else {
+            filters['segment'] = segmentRaw;
+        }
+      }
+
+      try {
+        const result = await apiFetch(`/campaigns/${cid}/send`, { 
+            method: 'POST', 
+            body: JSON.stringify(filters) 
+        });
+        showToast(result.message || 'Dispatch triggered');
+        fetchCampaigns();
+      } catch (e) { showToast(e.message, 'danger'); }
+    };
+
+    document.getElementById('dispatchCampSelector').onchange = async (e) => {
+        const cid = e.target.value;
+        const disp = document.getElementById('campStatsDisplay');
+        if (!cid) { disp.classList.add('hidden'); return; }
+        
+        try {
+            const orgQuery = state.currentOrgId ? `?organizationId=${state.currentOrgId}` : '';
+            const stats = await apiFetch(`/click-stats/campaign/${cid}${orgQuery}`);
+            document.getElementById('stat-opens').textContent = stats.opens || 0;
+            document.getElementById('stat-clicks').textContent = stats.clicks || 0;
+            disp.classList.remove('hidden');
+            document.getElementById('campaignStatusInfo').textContent = 'Live stats loaded.';
+        } catch(e) { }
+    };
+
+    document.getElementById('btnLogout').onclick = logout;
+    document.getElementById('orgSelector').onchange = (e) => {
+        state.currentOrgId = e.target.value;
+        localStorage.setItem('currentOrgId', state.currentOrgId);
+        
+        // Dynamic WebSocket Sync
+        if (state.wsSocket && state.wsSocket.connected) {
+            state.wsSocket.emit('joinTenant', state.currentOrgId);
+            const log = document.getElementById('wsLog');
+            log.textContent = `[${new Date().toLocaleTimeString()}] System: Switched context to Org ${state.currentOrgId}\n` + log.textContent;
+            document.getElementById('stat-live-events').textContent = '0';
+        }
+        
+        // Refresh Lists/Campaigns for this org
+        refreshDashboardData();
+        
+        showToast('Context updated');
+    };
+
+    render();
+  </script>
+</body>
+</html>
