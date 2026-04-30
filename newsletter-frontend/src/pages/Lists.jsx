@@ -36,6 +36,7 @@ export default function Lists() {
   const [segmentKey, setSegmentKey] = useState("");
   const [segmentValue, setSegmentValue] = useState("");
   const [segmentResults, setSegmentResults] = useState([]);
+  const [segmentTotal, setSegmentTotal] = useState(0);
   const [selectedListId, setSelectedListId] = useState("");
 
   const [subscribers, setSubscribers] = useState([]);
@@ -125,6 +126,7 @@ export default function Lists() {
     // console.log("FULL RESPONSE:", response);
     // console.log("RESPONSE DATA:", response.data);
     setSegmentResults(response.data.data || []);
+    setSegmentTotal(response.data.total || 0);
   };
 
   return (
@@ -193,6 +195,7 @@ export default function Lists() {
                 onChange={(e) => setSelectedListId(e.target.value)}
                 fullWidth
                 sx={{ mb: 2 }}
+                helperText="Segmentation runs across organization; list is used as context"
               >
                 {lists.map((list) => (
                   <MenuItem key={list.id} value={list.id}>
@@ -300,6 +303,12 @@ export default function Lists() {
           <Typography variant="h6" gutterBottom>
             Segment results
           </Typography>
+
+          {segmentResults.length > 0 && (
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+              Total results: {segmentTotal}
+            </Typography>
+          )}
 
           <Divider sx={{ mb: 2 }} />
 

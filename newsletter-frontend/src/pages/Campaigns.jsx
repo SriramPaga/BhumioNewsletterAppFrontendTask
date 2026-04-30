@@ -183,6 +183,10 @@ export default function Campaigns() {
                   ))}
                 </TextField>
 
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, mb: 1 }}>
+                  Templates are stored locally and will be used when backend integration is available.
+                </Typography>
+
                 <TextField
                   select
                   label="List"

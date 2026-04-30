@@ -105,16 +105,25 @@ export default function Subscribers() {
   const [csvFile, setCsvFile] = useState(null);
   const [search, setSearch] = useState("");
   const [selectedListId, setSelectedListId] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const loadSubscribers = async (currentPage = 1) => {
+    const subsRes = await callApi(() => api.getSubscribers(currentPage, 10));
+    setSubscribers(subsRes.data);
+    setPage(currentPage);
+    // Assume if less than 10, last page
+    setTotalPages(subsRes.data.length < 10 ? currentPage : currentPage + 1);
+  };
 
   useEffect(() => {
     const load = async () => {
-      const [subsRes, listsRes] = await Promise.all([
-        callApi(() => api.getSubscribers()),
+      const [listsRes] = await Promise.all([
         callApi(() => api.getLists()),
       ]);
-      setSubscribers(subsRes.data);
       setLists(listsRes.data);
       setSelectedListId(listsRes.data[0]?.id || "");
+      await loadSubscribers();
     };
     load();
   }, [callApi]);
@@ -130,10 +139,6 @@ export default function Subscribers() {
   const handleCreate = async (e) => {
     e.preventDefault();
     console.log("Submit triggered");
-    if (!selectedListId) {
-      console.log("No list selected");
-      return;
-    }
     console.log("Proceeding to create subscriber...");
 
     const customObject = customFields.reduce((acc, field) => {
@@ -152,8 +157,7 @@ export default function Subscribers() {
 
     await callApi(() => api.createSubscriber(payload), "Subscriber added");
 
-    const subsRes = await callApi(() => api.getSubscribers());
-    setSubscribers(subsRes.data);
+    await loadSubscribers(page);
 
     setEmail("");
     setPublicKey("");
@@ -165,8 +169,7 @@ export default function Subscribers() {
 
     await callApi(() => api.importCsv(selectedListId, csvFile), "CSV uploaded");
 
-    const subsRes = await callApi(() => api.getSubscribers());
-    setSubscribers(subsRes.data);
+    await loadSubscribers(page);
     setCsvFile(null);
   };
 
@@ -202,7 +205,7 @@ export default function Subscribers() {
                   required
                 />
 
-                <TextField
+                {/* <TextField
                   select
                   label="List"
                   value={selectedListId}
@@ -213,7 +216,7 @@ export default function Subscribers() {
                       {list.name}
                     </MenuItem>
                   ))}
-                </TextField>
+                </TextField> */}
 
                 <TextField
                   label="Public key (optional)"
@@ -341,6 +344,39 @@ export default function Subscribers() {
               </TableBody>
             </Table>
           </TableContainer>
+
+          {/* Pagination */}
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              mt: 2,
+              gap: 1,
+              p: 1,
+              border: '1px solid #e5e7eb',
+              borderRadius: 2,
+              backgroundColor: '#ffffff',
+            }}
+          >
+            <Button
+              variant="outlined"
+              disabled={page <= 1}
+              onClick={() => loadSubscribers(page - 1)}
+            >
+              Previous
+            </Button>
+            <Typography variant="body2" sx={{ alignSelf: 'center' }}>
+              Page {page} ({subscribers.length} items loaded)
+            </Typography>
+            <Button
+              variant="outlined"
+              disabled={subscribers.length < 10}
+              onClick={() => loadSubscribers(page + 1)}
+            >
+              Next
+            </Button>
+          </Box>
 
           {filteredSubscribers.length === 0 && (
             <Typography align="center" sx={{ mt: 4 }} color="text.secondary">
