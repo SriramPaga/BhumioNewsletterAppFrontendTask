@@ -43,7 +43,8 @@ export default function Topbar() {
           </Typography>
 
           <Typography variant="body2" color="text.secondary">
-            Manage campaigns, subscribers, and analytics
+            {/* Manage campaigns, subscribers, and analytics for {user?.organization?.name || 'Organization'} */}
+            Organization: {user?.organization?.name || `Org #${organizationId}`}
           </Typography>
         </Box>
 

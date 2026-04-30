@@ -20,7 +20,9 @@ import {
   MenuItem,
   Divider,
   Alert,
+  Tooltip,
 } from "@mui/material";
+
 import api from "../services/api.js";
 import { useAuth } from "../hooks/useAuth.jsx";
 import { useApi } from "../hooks/useApi.js";
@@ -148,7 +150,7 @@ export default function Campaigns() {
       <Grid container spacing={3}>
         {/* LEFT - Composer */}
         <Grid item xs={12} md={5} lg={4}>
-          <Card sx={{ backgroundColor: 'rgba(37, 99, 235, 0.05)' }}>
+          <Card sx={{ backgroundColor: "rgba(37, 99, 235, 0.05)" }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 Campaign composer
@@ -208,17 +210,17 @@ export default function Campaigns() {
                   value={targetUrl}
                   onChange={(e) => setTargetUrl(e.target.value)}
                 />
-
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={gpgEncrypt}
-                      onChange={(e) => setGpgEncrypt(e.target.checked)}
-                    />
-                  }
-                  label="GPG encryption"
-                />
-
+                <Tooltip title="GPG encryption is not yet implemented in the backend. This is a placeholder for future enhancement.">
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={gpgEncrypt}
+                        onChange={(e) => setGpgEncrypt(e.target.checked)}
+                      />
+                    }
+                    label="GPG encryption"
+                  />
+                </Tooltip>
                 <FormControlLabel
                   control={
                     <Switch
@@ -259,72 +261,68 @@ export default function Campaigns() {
         </Grid>
 
         {/* RIGHT - Campaign List */}
-        <Grid item xs={12} md={7} lg={8} >
+        <Grid item xs={12} md={7} lg={8}>
           {/* <Card sx={{ mb: 2 }}> */}
-            {/* <CardContent> */}
-              <Box sx={{ mb: 2 }}>
-                <TextField
-                  placeholder="Search campaigns..."
-                  value={campaignFilter}
-                  onChange={(e) => setCampaignFilter(e.target.value)}
-                  fullWidth
-                />
-              </Box>
+          {/* <CardContent> */}
+          <Box sx={{ mb: 2 }}>
+            <TextField
+              placeholder="Search campaigns..."
+              value={campaignFilter}
+              onChange={(e) => setCampaignFilter(e.target.value)}
+              fullWidth
+            />
+          </Box>
 
-              <Divider sx={{ mb: 2 }} />
-              {successMessage && (
-                <Alert severity="success" sx={{ mb: 2 }}>
-                  {successMessage}
-                </Alert>
-              )}
-              <TableContainer
-                component={Paper}
-                sx={{ border: "1px solid #e5e7eb" }}
-              >
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Subject</TableCell>
-                      <TableCell>List</TableCell>
-                      <TableCell>Action</TableCell>
-                    </TableRow>
-                  </TableHead>
+          <Divider sx={{ mb: 2 }} />
+          {successMessage && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              {successMessage}
+            </Alert>
+          )}
+          <TableContainer
+            component={Paper}
+            sx={{ border: "1px solid #e5e7eb" }}
+          >
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Subject</TableCell>
+                  <TableCell>List</TableCell>
+                  <TableCell>Action</TableCell>
+                </TableRow>
+              </TableHead>
 
-                  <TableBody>
-                    {visibleCampaigns.map((c) => (
-                      <TableRow key={c.id}>
-                        <TableCell>{c.subject}</TableCell>
-                        <TableCell>{c.list?.name || "—"}</TableCell>
-                        <TableCell>
-                          <Button
-                            size="small"
-                            variant="contained"
-                            onClick={() => handleSend(c)}
-                            disabled={loading}
-                          >
-                            Dispatch
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+              <TableBody>
+                {visibleCampaigns.map((c) => (
+                  <TableRow key={c.id}>
+                    <TableCell>{c.subject}</TableCell>
+                    <TableCell>{c.list?.name || "—"}</TableCell>
+                    <TableCell>
+                      <Button
+                        size="small"
+                        variant="contained"
+                        onClick={() => handleSend(c)}
+                        disabled={loading}
+                      >
+                        Dispatch
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
 
-              {visibleCampaigns.length === 0 && (
-                <Typography
-                  align="center"
-                  sx={{ mt: 3 }}
-                  color="text.secondary"
-                >
-                  No campaigns created
-                </Typography>
-              )}
-            {/* </CardContent> */}
+          {visibleCampaigns.length === 0 && (
+            <Typography align="center" sx={{ mt: 3 }} color="text.secondary">
+              No campaigns created
+            </Typography>
+          )}
+          {/* </CardContent> */}
           {/* </Card> */}
 
           {/* Automation */}
-          <Card sx={{mt:4}}>
+          <Card sx={{ mt: 4 }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 Automation
@@ -349,7 +347,12 @@ export default function Campaigns() {
                       return (
                         <Box
                           key={queueName}
-                          sx={{ mb: 2, p: 2, borderRadius: 1,  borderBottom: "1.5px solid #b4b4b4", }}
+                          sx={{
+                            mb: 2,
+                            p: 2,
+                            borderRadius: 1,
+                            borderBottom: "1.5px solid #b4b4b4",
+                          }}
                         >
                           {/* 🔹 TITLE */}
                           <Typography variant="h6">

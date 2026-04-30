@@ -65,6 +65,10 @@ export default function Templates() {
         <Typography variant="body2" color="text.secondary">
           Create reusable content blocks for campaigns
         </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          Note: Templates are stored locally for demo purposes and are not persisted
+          to the backend.
+        </Typography>
       </Box>
 
       <Grid container spacing={3}>
@@ -109,71 +113,67 @@ export default function Templates() {
         <Grid item xs={12} md={7} lg={8}>
           {/* <Card>
             <CardContent> */}
-              <Typography variant="h6" gutterBottom>
-                Templates
+          <Typography variant="h6" gutterBottom>
+            Templates
+          </Typography>
+
+          <List>
+            {templates.map((template) => (
+              <Box key={template.id}>
+                <ListItem disablePadding>
+                  <ListItemButton
+                    onClick={() => setSelected(template)}
+                    selected={selected?.id === template.id}
+                  >
+                    <ListItemText
+                      primary={template.title}
+                      secondary={
+                        template.content.length > 80
+                          ? template.content.slice(0, 80) + "..."
+                          : template.content
+                      }
+                    />
+                  </ListItemButton>
+                </ListItem>
+                <Divider />
+              </Box>
+            ))}
+
+            {!templates.length && (
+              <Typography align="center" sx={{ py: 4 }} color="text.secondary">
+                No templates created
+              </Typography>
+            )}
+          </List>
+
+          {/* Preview */}
+          {selected && (
+            <Box sx={{ mt: 3 }}>
+              <Divider sx={{ mb: 2 }} />
+
+              <Typography variant="subtitle1" gutterBottom>
+                Preview
               </Typography>
 
-              <List>
-                {templates.map((template) => (
-                  <Box key={template.id}>
-                    <ListItem disablePadding>
-                      <ListItemButton
-                        onClick={() => setSelected(template)}
-                        selected={selected?.id === template.id}
-                      >
-                        <ListItemText
-                          primary={template.title}
-                          secondary={
-                            template.content.length > 80
-                              ? template.content.slice(0, 80) + "..."
-                              : template.content
-                          }
-                        />
-                      </ListItemButton>
-                    </ListItem>
-                    <Divider />
-                  </Box>
-                ))}
+              <Box
+                sx={{
+                  border: "1px solid #e5e7eb",
+                  borderRadius: 1,
+                  p: 2,
+                  backgroundColor: "#fff",
+                }}
+              >
+                <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                  {selected.title}
+                </Typography>
 
-                {!templates.length && (
-                  <Typography
-                    align="center"
-                    sx={{ py: 4 }}
-                    color="text.secondary"
-                  >
-                    No templates created
-                  </Typography>
-                )}
-              </List>
-
-              {/* Preview */}
-              {selected && (
-                <Box sx={{ mt: 3 }}>
-                  <Divider sx={{ mb: 2 }} />
-
-                  <Typography variant="subtitle1" gutterBottom>
-                    Preview
-                  </Typography>
-
-                  <Box
-                    sx={{
-                      border: "1px solid #e5e7eb",
-                      borderRadius: 1,
-                      p: 2,
-                      backgroundColor: "#fff",
-                    }}
-                  >
-                    <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                      {selected.title}
-                    </Typography>
-
-                    <Typography sx={{ whiteSpace: "pre-wrap" }}>
-                      {selected.content}
-                    </Typography>
-                  </Box>
-                </Box>
-              )}
-            {/* </CardContent>
+                <Typography sx={{ whiteSpace: "pre-wrap" }}>
+                  {selected.content}
+                </Typography>
+              </Box>
+            </Box>
+          )}
+          {/* </CardContent>
           </Card> */}
         </Grid>
       </Grid>

@@ -22,6 +22,7 @@ import { formatDate } from "../utils/format.js";
 import { useAuth } from "../hooks/useAuth.jsx";
 import { useApi } from "../hooks/useApi.js";
 
+
 const segmentFields = ["email", "createdAt"];
 
 export default function Lists() {

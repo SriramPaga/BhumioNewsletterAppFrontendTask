@@ -1,14 +1,16 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
-import DashboardLayout from './components/DashboardLayout.jsx';
-import Dashboard from './pages/Dashboard.jsx';
-import Subscribers from './pages/Subscribers.jsx';
-import Lists from './pages/Lists.jsx';
-import Campaigns from './pages/Campaigns.jsx';
-import Templates from './pages/Templates.jsx';
-import Analytics from './pages/Analytics.jsx';
-import Login from './pages/Login.jsx';
-import NotFound from './pages/NotFound.jsx';
-import { useAuth } from './hooks/useAuth.jsx';
+import { Navigate, Route, Routes } from "react-router-dom";
+import DashboardLayout from "./components/DashboardLayout.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
+import Subscribers from "./pages/Subscribers.jsx";
+import Lists from "./pages/Lists.jsx";
+import Campaigns from "./pages/Campaigns.jsx";
+import Templates from "./pages/Templates.jsx";
+import Analytics from "./pages/Analytics.jsx";
+import Login from "./pages/Login.jsx";
+import NotFound from "./pages/NotFound.jsx";
+import { useAuth } from "./hooks/useAuth.jsx";
+import Settings from "./pages/Settings";
+import Profile from "./pages/Profile.jsx";
 
 function ProtectedRoute({ children }) {
   const { token } = useAuth();
@@ -33,6 +35,9 @@ export default function AppRoutes() {
         <Route path="campaigns" element={<Campaigns />} />
         <Route path="templates" element={<Templates />} />
         <Route path="analytics" element={<Analytics />} />
+        <Route path="profile" element={<Profile />} />
+        // inside routes
+        <Route path="/settings" element={<Settings />} />
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>

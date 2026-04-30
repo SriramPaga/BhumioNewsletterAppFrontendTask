@@ -179,4 +179,6 @@ export default {
 
   // ⚙️ Queue / Automation
   getAutomationHealth: () => client.get('/queues/health'),
+
+  getUserProfile: (id) => client.get(`/users/profile/${id}`),
 };

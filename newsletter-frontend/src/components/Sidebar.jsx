@@ -18,7 +18,8 @@ import ListIcon from "@mui/icons-material/List";
 import CampaignIcon from "@mui/icons-material/Send";
 import TemplateIcon from "@mui/icons-material/Article";
 import AnalyticsIcon from "@mui/icons-material/BarChart";
-
+import SettingsIcon from "@mui/icons-material/Settings";
+import GroupsIcon from "@mui/icons-material/Groups";
 const iconColors = {
   dashboard: "#64748B", //Slate Blue
   subscribers: "#4A9475", // muted green
@@ -26,6 +27,8 @@ const iconColors = {
   campaigns: "#2563EB", // soft blue
   templates: "#7C3AED", // Deep Purple
   analytics: "#0891B2", // teal
+  profile: "#9333EA", // purple
+  settings: "#965730", // amber
 };
 const navItems = [
   {
@@ -66,6 +69,20 @@ const navItems = [
     to: "/analytics",
     icon: (
       <AnalyticsIcon fontSize="small" sx={{ color: iconColors.analytics }} />
+    ),
+  },
+  {
+    label: "profile",
+    to: "/profile",
+    icon: (
+      <GroupsIcon fontSize="small" sx={{ color: iconColors.profile }} />
+    ),
+  },
+   {
+    label: "Settings",
+    to: "/settings",
+    icon: (
+      <SettingsIcon fontSize="small" sx={{ color: iconColors.settings }} />
     ),
   },
 ];

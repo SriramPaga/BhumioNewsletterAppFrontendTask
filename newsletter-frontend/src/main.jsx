@@ -9,14 +9,21 @@ import { SnackbarProvider } from "./context/SnackbarContext.jsx";
 const theme = createTheme({
   palette: {
     mode: "light",
+    // primary: {
+    //   main: "#111827", // almost black (strong editorial tone)
+    // },
+    // secondary: {
+    //   main: "#2563eb", // subtle blue accent
+    // },
     primary: {
-      main: "#111827", // almost black (strong editorial tone)
+      main: "#4A9475", // your button green (make it system color)
     },
     secondary: {
-      main: "#2563eb", // subtle blue accent
+      main: "#64748b", // neutral slate (better than blue)
     },
     background: {
-      default: "#f9fafb", // soft neutral
+      // default: "#f9fafb", // soft neutral
+      default: "#f3f4f6",
       paper: "#ffffff",
     },
     text: {
@@ -67,26 +74,26 @@ const theme = createTheme({
     // },
 
     MuiCard: {
-  styleOverrides: {
-    root: {
-      border: "1px solid #e5e7eb",
-      borderRadius: 14,
+      styleOverrides: {
+        root: {
+          border: "1px solid #e5e7eb",
+          borderRadius: 14,
 
-      // 🔥 base shadow (very subtle)
-      boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
+          // 🔥 base shadow (very subtle)
+          boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
 
-      // 🔥 smooth animation
-      transition: "all 0.25s ease",
+          // 🔥 smooth animation
+          transition: "all 0.25s ease",
 
-      // 🔥 hover effect
-      "&:hover": {
-        boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
-        transform: "translateY(-4px)",
-        borderColor: "#d1d5db",
+          // 🔥 hover effect
+          "&:hover": {
+            boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+            transform: "translateY(-2px)",
+            borderColor: "#d1d5db",
+          },
+        },
       },
     },
-  },
-},
 
     // MuiButton: {
     //   styleOverrides: {
