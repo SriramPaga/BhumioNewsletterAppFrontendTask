@@ -39,14 +39,14 @@ export default function Lists() {
 
   const [subscribers, setSubscribers] = useState([]);
 
-  useEffect(() => {
-    const load = async () => {
-      const response = await callApi(() => api.getLists());
-      setLists(response.data);
-      setSelectedListId(response.data[0]?.id || "");
-    };
-    load();
-  }, [callApi]);
+  // useEffect(() => {
+  //   const load = async () => {
+  //     const response = await callApi(() => api.getLists());
+  //     setLists(response.data);
+  //     setSelectedListId(response.data[0]?.id || "");
+  //   };
+  //   load();
+  // }, [callApi]);
 
   useEffect(() => {
     const load = async () => {
@@ -85,6 +85,7 @@ export default function Lists() {
     e.preventDefault();
     if (!name) return;
     console.log("Creating list...");
+  
 
     const payload = {
       name,
@@ -120,8 +121,8 @@ export default function Lists() {
         [segmentKey]: segmentValue,
       }),
     );
-    console.log("FULL RESPONSE:", response);
-    console.log("RESPONSE DATA:", response.data);
+    // console.log("FULL RESPONSE:", response);
+    // console.log("RESPONSE DATA:", response.data);
     setSegmentResults(response.data.data || []);
   };
 
@@ -129,21 +130,22 @@ export default function Lists() {
     <Box>
       {/* Header */}
       <Box sx={{ mb: 3 }}>
-        <Typography variant="h4">Lists</Typography>
-        <Typography variant="body2" color="text.secondary">
+        <Typography variant="h4">Subscriber List</Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
           Organize subscribers and define segmentation rules
         </Typography>
       </Box>
 
       <Grid container spacing={3}>
-        {/* LEFT SIDE */}
-        <Grid item xs={12} md={5} lg={4}>
+        {/* ================= TOP ROW (FORMS) ================= */}
+
+        {/* Create List */}
+        <Grid item xs={12} md={6}>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             Lists are automatically linked to your organization
           </Typography>
 
-          {/* Create List */}
-          <Card sx={{ mb: 2 }}>
+          <Card sx={{ backgroundColor: "rgba(74, 148, 117, 0.05)" }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 Create list
@@ -162,33 +164,24 @@ export default function Lists() {
                   helperText="Give a meaningful name like 'Marketing Users' or 'Beta Testers'"
                 />
 
-                {/* <TextField
-                  label="Custom field key"
-                  value={customFieldKey}
-                  onChange={(e) => setCustomFieldKey(e.target.value)}
-                />
-
-                <TextField
-                  label="Custom field value"
-                  value={customFieldValue}
-                  onChange={(e) => setCustomFieldValue(e.target.value)}
-                /> */}
-
                 <Button
                   type="submit"
                   variant="contained"
+                  fullWidth
                   disabled={!name || loading}
                 >
-                  Create list
+                  {loading ? "Creating..." : "Create list"}
                 </Button>
               </Box>
             </CardContent>
           </Card>
+        </Grid>
 
-          {/* Segment */}
-          <Card>
+        {/* Segment */}
+        <Grid item xs={12} md={6}>
+          <Card sx={{ backgroundColor: "rgba(37, 99, 235, 0.05)" }}>
             <CardContent>
-              <Typography variant="h6" gutterBottom>
+              <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
                 Segment subscribers
               </Typography>
 
@@ -232,105 +225,120 @@ export default function Lists() {
               <Button
                 sx={{ mt: 2 }}
                 variant="contained"
+                fullWidth
                 onClick={handleSegment}
                 disabled={!segmentKey || !segmentValue || loading}
               >
-                Run segment
+                {loading ? "Running..." : "Run segment"}
               </Button>
             </CardContent>
           </Card>
         </Grid>
 
-        {/* RIGHT SIDE */}
-        <Grid item xs={12} md={7} lg={8}>
-          {/* Lists Table */}
-          <Card sx={{ mb: 2 }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Lists
-              </Typography>
+        {/* ================= BOTTOM ROW (TABLES) ================= */}
 
-              {lists.length === 0 ? (
-                <Typography
-                  align="center"
-                  sx={{ py: 4 }}
-                  color="text.secondary"
-                >
-                  No lists yet. Create your first list to get started.
-                </Typography>
-              ) : (
-                <TableContainer
-                  component={Paper}
-                  sx={{ border: "1px solid #e5e7eb" }}
-                >
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Name</TableCell>
-                        <TableCell>Organization</TableCell>
-                        {/* <TableCell>Custom fields</TableCell> */}
-                        <TableCell>Created</TableCell>
-                      </TableRow>
-                    </TableHead>
+        {/* Lists Table */}
+        <Grid item xs={12} md={6}>
+          {/* <Card> */}
+          {/* <CardContent> */}
+          <Typography variant="h6" gutterBottom>
+            Available Lists
+          </Typography>
 
-                    <TableBody>
-                      {lists.map((list) => (
-                        <TableRow key={list.id}>
-                          <TableCell>{list.name}</TableCell>
-                          <TableCell>
-                            {list.organization?.name || "Not Linked"}
-                          </TableCell>
-                          {/* <TableCell>
-                            {list.customFields
-                              ? JSON.stringify(list.customFields)
-                              : "—"}
-                          </TableCell> */}
-                          <TableCell>{formatDate(list.createdAt)}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              )}
-            </CardContent>
-          </Card>
+          <Divider sx={{ mb: 2 }} />
 
-          {/* Segment Results */}
-          {segmentResults.length > 0 && (
-            <Card>
-              <CardContent>
-                <Typography variant="h6" gutterBottom>
-                  Segment results
-                </Typography>
+          {lists.length === 0 ? (
+            <Typography align="center" sx={{ py: 4 }} color="text.secondary">
+              No lists yet. Create your first list to start organizing
+              subscribers.
+            </Typography>
+          ) : (
+            <TableContainer
+              component={Paper}
+              sx={{ border: "1px solid #e5e7eb" }}
+            >
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Name</TableCell>
+                    <TableCell>Organization</TableCell>
+                    <TableCell>Created</TableCell>
+                  </TableRow>
+                </TableHead>
 
-                <Divider sx={{ mb: 2 }} />
-
-                <TableContainer component={Paper}>
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Email</TableCell>
-                        <TableCell>Custom fields</TableCell>
-                      </TableRow>
-                    </TableHead>
-
-                    <TableBody>
-                      {segmentResults.map((s) => (
-                        <TableRow key={s.id}>
-                          <TableCell>{s.email}</TableCell>
-                          <TableCell>
-                            {s.customFields
-                              ? JSON.stringify(s.customFields)
-                              : "—"}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </CardContent>
-            </Card>
+                <TableBody>
+                  {lists.map((list) => (
+                    <TableRow
+                      key={list.id}
+                      hover
+                      sx={{
+                        "&:hover": {
+                          backgroundColor: "#f9fafb",
+                        },
+                      }}
+                    >
+                      <TableCell>{list.name}</TableCell>
+                      <TableCell>
+                        {list.organization?.name || "Not Linked"}
+                      </TableCell>
+                      <TableCell>{formatDate(list.createdAt)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           )}
+          {/* </CardContent> */}
+          {/* </Card> */}
+        </Grid>
+
+        {/* Segment Results */}
+        <Grid item xs={12} md={6}>
+          {/* <Card> */}
+          {/* <CardContent> */}
+          <Typography variant="h6" gutterBottom>
+            Segment results
+          </Typography>
+
+          <Divider sx={{ mb: 2 }} />
+
+          {segmentResults.length === 0 ? (
+            <Typography color="text.secondary">
+              Run a segment to see results
+            </Typography>
+          ) : (
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Email</TableCell>
+                    <TableCell>Custom fields</TableCell>
+                  </TableRow>
+                </TableHead>
+
+                <TableBody>
+                  {segmentResults.map((s) => (
+                    <TableRow
+                      key={s.id}
+                      hover
+                      sx={{
+                        "&:hover": {
+                          backgroundColor: "#f9fafb",
+                        },
+                      }}
+                    >
+                      <TableCell>{s.email}</TableCell>
+                      <TableCell>
+                        {s.customFields ? JSON.stringify(s.customFields) : "—"}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+          {/* </CardContent> */}
+          {/* </Card> */}
         </Grid>
       </Grid>
     </Box>

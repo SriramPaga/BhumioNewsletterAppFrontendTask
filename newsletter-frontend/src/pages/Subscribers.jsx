@@ -17,7 +17,10 @@ import {
   Chip,
   MenuItem,
   Divider,
+  Icon,
 } from "@mui/material";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import IconButton from "@mui/material/IconButton";
 import api from "../services/api.js";
 import { formatDate } from "../utils/format.js";
 import { useAuth } from "../hooks/useAuth.jsx";
@@ -52,16 +55,38 @@ function CustomFieldInputs({ fields, onChange }) {
               onChange={(e) => updateField(index, "value", e.target.value)}
             />
           </Grid>
-          <Grid item xs={2}>
+          {/* <Grid item xs={2}>
             <Button
               onClick={() => onChange(fields.filter((_, i) => i !== index))}
             >
-              Remove
+              <DeleteIcon />
             </Button>
+          </Grid> */}
+          <Grid item xs={2} sx={{ display: "flex", alignItems: "center" }}>
+            <IconButton
+              onClick={() => onChange(fields.filter((_, i) => i !== index))}
+              sx={{
+                color: "#9ca3af",
+                "&:hover": {
+                  color: "#ef4444",
+                  backgroundColor: "rgba(239,68,68,0.08)",
+                },
+              }}
+            >
+              <DeleteOutlineIcon fontSize="small" />
+            </IconButton>
           </Grid>
         </Grid>
       ))}
-      <Button size="small" onClick={addField}>
+      <Button
+        size="medium"
+        onClick={addField}
+        sx={{
+          // alignSelf: "flex-start",
+          color: "#4A9475",
+          fontWeight: 600,
+        }}
+      >
         + Add field
       </Button>
     </Box>
@@ -159,7 +184,7 @@ export default function Subscribers() {
         {/* LEFT SIDE */}
         <Grid item xs={12} md={5} lg={4}>
           {/* Add Subscriber */}
-          <Card sx={{ mb: 2 }}>
+          <Card sx={{ backgroundColor: "rgba(74, 148, 117, 0.05)", mb: 2 }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 Add subscriber
@@ -208,17 +233,17 @@ export default function Subscribers() {
                   variant="contained"
                   disabled={!selectedListId || loading}
                 >
-                  Add subscriber
+                  {loading ? "Adding..." : "Add subscriber"}
                 </Button>
               </Box>
             </CardContent>
           </Card>
 
           {/* CSV Upload */}
-          <Card>
+          <Card  sx={{ backgroundColor: 'rgba(37, 99, 235, 0.05)' }}>
             <CardContent>
-              <Typography variant="subtitle1" gutterBottom>
-                Import CSV
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                Upload a CSV file to bulk import subscribers
               </Typography>
 
               <Button component="label" variant="outlined" fullWidth>
@@ -252,70 +277,78 @@ export default function Subscribers() {
 
         {/* RIGHT SIDE */}
         <Grid item xs={12} md={7} lg={8}>
-          <Card>
-            <CardContent>
-              {/* Search */}
-              <Box sx={{ mb: 2 }}>
-                <TextField
-                  placeholder="Search subscribers..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  fullWidth
-                />
-              </Box>
+          {/* <Card> */}
+          {/* <CardContent> */}
+          {/* Search */}
+          <Box sx={{ mb: 2 }}>
+            <TextField
+              placeholder="Search subscribers..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              fullWidth
+              InputProps={{
+                sx: {
+                  borderRadius: 2,
+                  backgroundColor: "#fafafa",
+                },
+              }}
+            />
+          </Box>
 
-              <Divider sx={{ mb: 2 }} />
+          <Divider sx={{ mb: 2 }} />
 
-              {/* Table */}
-              <TableContainer
-                component={Paper}
-                sx={{ border: "1px solid #e5e7eb" }}
-              >
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Email</TableCell>
-                      <TableCell>Organization</TableCell>
-                      <TableCell>Custom fields</TableCell>
-                      <TableCell>Created</TableCell>
-                    </TableRow>
-                  </TableHead>
+          {/* Table */}
+          <TableContainer
+            component={Paper}
+            sx={{ border: "1px solid #e5e7eb" }}
+          >
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell>Email</TableCell>
+                  <TableCell>Organization</TableCell>
+                  <TableCell>Custom fields</TableCell>
+                  <TableCell>Created</TableCell>
+                </TableRow>
+              </TableHead>
 
-                  <TableBody>
-                    {filteredSubscribers.map((s) => (
-                      <TableRow key={s.id}>
-                        <TableCell>{s.email}</TableCell>
-                        <TableCell>{s.organization?.name || "—"}</TableCell>
-                        <TableCell>
-                          {Object.entries(s.customFields || {}).map(
-                            ([k, v]) => (
-                              <Chip
-                                key={k}
-                                label={`${k}: ${v}`}
-                                size="small"
-                                sx={{ mr: 0.5, mb: 0.5 }}
-                              />
-                            ),
-                          )}
-                        </TableCell>
-                        <TableCell>{formatDate(s.createdAt)}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+              <TableBody>
+                {filteredSubscribers.map((s) => (
+                  <TableRow
+                    key={s.id}
+                    hover
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: "#f9fafb",
+                      },
+                    }}
+                  >
+                    <TableCell>{s.email}</TableCell>
+                    <TableCell>{s.organization?.name || "—"}</TableCell>
+                    <TableCell>
+                      {Object.entries(s.customFields || {}).map(([k, v]) => (
+                        <Chip
+                          key={k}
+                          label={`${k}: ${v}`}
+                          size="small"
+                          sx={{ mr: 0.5, mb: 0.5 }}
+                        />
+                      ))}
+                    </TableCell>
+                    <TableCell>{formatDate(s.createdAt)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
 
-              {filteredSubscribers.length === 0 && (
-                <Typography
-                  align="center"
-                  sx={{ mt: 4 }}
-                  color="text.secondary"
-                >
-                  No subscribers found
-                </Typography>
-              )}
-            </CardContent>
-          </Card>
+          {filteredSubscribers.length === 0 && (
+            <Typography align="center" sx={{ mt: 4 }} color="text.secondary">
+              No subscribers found
+            </Typography>
+          )}
+          {/* </CardContent> */}
+          {/* </Card> */}
         </Grid>
       </Grid>
     </Box>

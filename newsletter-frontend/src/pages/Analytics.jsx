@@ -16,6 +16,10 @@ import {
 } from "@mui/material";
 import api from "../services/api.js";
 
+import VisibilityOutlinedIcon from "@mui/icons-material/VisibilityOutlined";
+import AdsClickOutlinedIcon from "@mui/icons-material/AdsClickOutlined";
+import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
+
 export default function Analytics() {
   const [campaigns, setCampaigns] = useState([]);
   const [stats, setStats] = useState([]);
@@ -42,12 +46,18 @@ export default function Analytics() {
 
   return (
     <Box>
-      <Alert severity="info" sx={{ mb: 2 }}>
-        Analytics requires real email delivery and user interaction
-        (opens/clicks). In local setup, metrics may remain 0.
+      <Alert
+        severity="info"
+        sx={{
+          backgroundColor: "rgba(37,99,235,0.05)",
+          border: "1px solid rgba(37,99,235,0.1)",
+          mb: 2,
+        }}
+      >
+        Real-time delivery data: In local setups, metrics may remain 0.
       </Alert>
       <Typography variant="h4" mb={2}>
-        Analytics
+        Performance Analytics
       </Typography>
       {message && (
         <Alert severity="error" sx={{ mb: 2 }}>
@@ -61,10 +71,10 @@ export default function Analytics() {
       )}
       <Grid container spacing={2}>
         <Grid item xs={12} md={4}>
-          <Card>
+          <Card sx={{ backgroundColor: "#e7e7e7" }}>
             <CardContent>
               <Typography variant="h6">Campaigns tracked</Typography>
-              <Typography variant="h3" sx={{ mt: 2 }}>
+              <Typography variant="h3" sx={{ fontWeight: 700, mt: 2 }}>
                 {campaigns.length}
               </Typography>
               <Typography color="text.secondary">
@@ -75,13 +85,32 @@ export default function Analytics() {
         </Grid>
 
         <Grid item xs={12} md={8}>
-          <Card>
+          <Card
+            sx={{
+              "&:hover": {
+                transform: "none",
+                boxShadow: "none",
+              },
+            }}
+          >
             <CardContent>
               <Typography variant="h6">Top metrics</Typography>
               <Grid container spacing={2} sx={{ mt: 1 }}>
                 <Grid item xs={4}>
-                  <Card variant="outlined" sx={{ p: 2 }}>
-                    <Typography color="text.secondary">Opens</Typography>
+                  <Card
+                    variant="outlined"
+                    sx={{
+                      p: 2,
+                      borderLeft: "4px solid #4A9475", // change color per metric
+                      backgroundColor: "rgba(74,148,117,0.03)",
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <VisibilityOutlinedIcon
+                        sx={{ fontSize: 18, color: "#4A9475" }}
+                      />
+                      <Typography color="text.secondary">Opens</Typography>
+                    </Box>
                     <Typography variant="h5">
                       {(stats || []).reduce(
                         (sum, item) => sum + Number(item.opens || 0),
@@ -91,8 +120,20 @@ export default function Analytics() {
                   </Card>
                 </Grid>
                 <Grid item xs={4}>
-                  <Card variant="outlined" sx={{ p: 2 }}>
-                    <Typography color="text.secondary">Clicks</Typography>
+                  <Card
+                    variant="outlined"
+                    sx={{
+                      p: 2,
+                      borderLeft: "4px solid #2563EB", // change color per metric
+                      backgroundColor: "rgba(74,148,117,0.03)",
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <AdsClickOutlinedIcon
+                        sx={{ fontSize: 18, color: "#2563EB" }}
+                      />
+                      <Typography color="text.secondary">Clicks</Typography>
+                    </Box>
                     <Typography variant="h5">
                       {stats.reduce(
                         (sum, item) => sum + Number(item.clicks || 0),
@@ -102,10 +143,20 @@ export default function Analytics() {
                   </Card>
                 </Grid>
                 <Grid item xs={4}>
-                  <Card variant="outlined" sx={{ p: 2 }}>
-                    <Typography color="text.secondary">
-                      Unique subscribers
-                    </Typography>
+                  <Card
+                    variant="outlined"
+                    sx={{
+                      p: 2,
+                      borderLeft: "4px solid #D97706", // change color per metric
+                      backgroundColor: "rgba(74,148,117,0.03)",
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <PeopleOutlineIcon
+                        sx={{ fontSize: 18, color: "#D97706" }}
+                      />
+                      <Typography color="text.secondary">Unique</Typography>
+                    </Box>
                     <Typography variant="h5">
                       {stats.reduce(
                         (sum, item) =>
@@ -130,33 +181,41 @@ export default function Analytics() {
             see results.
           </Typography>
         )}
-      <Card sx={{ mt: 2 }}>
-        <CardContent>
-          <Typography variant="h6">Campaign stats</Typography>
-          <TableContainer component={Paper} sx={{ mt: 2 }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Campaign</TableCell>
-                  <TableCell>Opens</TableCell>
-                  <TableCell>Clicks</TableCell>
-                  <TableCell>Unique</TableCell>
+      <Box sx={{ mt: 2 }}>
+        {/* <CardContent> */}
+        <Typography variant="h6">Campaign Performance Metrics</Typography>
+        <TableContainer component={Paper} sx={{ mt: 2 }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Campaign</TableCell>
+                <TableCell>Opens</TableCell>
+                <TableCell>Clicks</TableCell>
+                <TableCell>Unique</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {stats.map((row) => (
+                <TableRow
+                  key={row.campaignId}
+                  hover
+                  sx={{
+                    "&:hover": {
+                      backgroundColor: "#f9fafb",
+                    },
+                  }}
+                >
+                  <TableCell>{row.subject}</TableCell>
+                  <TableCell>{row.opens}</TableCell>
+                  <TableCell>{row.clicks}</TableCell>
+                  <TableCell>{row.uniqueSubscribers}</TableCell>
                 </TableRow>
-              </TableHead>
-              <TableBody>
-                {stats.map((row) => (
-                  <TableRow key={row.campaignId}>
-                    <TableCell>{row.subject}</TableCell>
-                    <TableCell>{row.opens}</TableCell>
-                    <TableCell>{row.clicks}</TableCell>
-                    <TableCell>{row.uniqueSubscribers}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </CardContent>
-      </Card>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        {/* </CardContent> */}
+      </Box>
     </Box>
   );
 }

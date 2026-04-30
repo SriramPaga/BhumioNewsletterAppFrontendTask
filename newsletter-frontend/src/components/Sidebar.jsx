@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { useState } from "react";
+import { NavLink } from "react-router-dom";
 import {
   Box,
   Divider,
@@ -11,21 +11,63 @@ import {
   ListItemText,
   Toolbar,
   Typography,
-} from '@mui/material';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import PeopleIcon from '@mui/icons-material/People';
-import ListIcon from '@mui/icons-material/List';
-import CampaignIcon from '@mui/icons-material/Send';
-import TemplateIcon from '@mui/icons-material/Article';
-import AnalyticsIcon from '@mui/icons-material/BarChart';
+} from "@mui/material";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import PeopleIcon from "@mui/icons-material/People";
+import ListIcon from "@mui/icons-material/List";
+import CampaignIcon from "@mui/icons-material/Send";
+import TemplateIcon from "@mui/icons-material/Article";
+import AnalyticsIcon from "@mui/icons-material/BarChart";
 
+const iconColors = {
+  dashboard: "#64748B", //Slate Blue
+  subscribers: "#4A9475", // muted green
+  lists: "#4F46E5", // indigo
+  campaigns: "#2563EB", // soft blue
+  templates: "#7C3AED", // Deep Purple
+  analytics: "#0891B2", // teal
+};
 const navItems = [
-  { label: 'Dashboard', to: '/', icon: <DashboardIcon /> },
-  { label: 'Subscribers', to: '/subscribers', icon: <PeopleIcon /> },
-  { label: 'Lists', to: '/lists', icon: <ListIcon /> },
-  { label: 'Campaigns', to: '/campaigns', icon: <CampaignIcon /> },
-  { label: 'Templates', to: '/templates', icon: <TemplateIcon /> },
-  { label: 'Analytics', to: '/analytics', icon: <AnalyticsIcon /> },
+  {
+    label: "Dashboard",
+    to: "/",
+    icon: (
+      <DashboardIcon fontSize="small" sx={{ color: iconColors.dashboard }} />
+    ),
+  },
+  {
+    label: "Subscribers",
+    to: "/subscribers",
+    icon: (
+      <PeopleIcon fontSize="small" sx={{ color: iconColors.subscribers }} />
+    ),
+  },
+  {
+    label: "Lists",
+    to: "/lists",
+    icon: <ListIcon fontSize="small" sx={{ color: iconColors.lists }} />,
+  },
+  {
+    label: "Campaigns",
+    to: "/campaigns",
+    icon: (
+      <CampaignIcon fontSize="small" sx={{ color: iconColors.campaigns }} />
+    ),
+  },
+  {
+    label: "Templates",
+    to: "/templates",
+    icon: (
+      <TemplateIcon fontSize="small" sx={{ color: iconColors.templates }} />
+    ),
+  },
+  {
+    label: "Analytics",
+    to: "/analytics",
+    icon: (
+      <AnalyticsIcon fontSize="small" sx={{ color: iconColors.analytics }} />
+    ),
+  },
 ];
 
 export default function Sidebar() {
@@ -35,11 +77,11 @@ export default function Sidebar() {
   const drawer = (
     <Box
       sx={{
-        height: '100%',
-        bgcolor: '#ffffff',
-        borderRight: '1px solid #e5e7eb',
-        display: 'flex',
-        flexDirection: 'column',
+        height: "100%",
+        bgcolor: "#ffffff",
+        borderRight: "1px solid #e5e7eb",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       {/* Logo / Brand */}
@@ -62,24 +104,24 @@ export default function Sidebar() {
                 borderRadius: 2,
                 px: 2,
                 py: 1,
-                color: 'text.primary',
+                color: "text.primary",
 
-                '& .MuiListItemIcon-root': {
-                  color: 'text.secondary',
+                "& .MuiListItemIcon-root": {
+                  color: "text.secondary",
                   minWidth: 36,
                 },
 
-                '&.active': {
-                  bgcolor: '#f3f4f6',
+                "&.active": {
+                  bgcolor: "#f3f4f6",
                   fontWeight: 500,
 
-                  '& .MuiListItemIcon-root': {
-                    color: 'text.primary',
+                  "& .MuiListItemIcon-root": {
+                    color: "text.primary",
                   },
                 },
 
-                '&:hover': {
-                  bgcolor: '#f9fafb',
+                "&:hover": {
+                  bgcolor: "#f9fafb",
                 },
               }}
             >
@@ -98,17 +140,20 @@ export default function Sidebar() {
   );
 
   return (
-    <Box component="nav" sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}>
+    <Box
+      component="nav"
+      sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
+    >
       {/* Desktop */}
       <Drawer
         variant="permanent"
         open
         sx={{
-          display: { xs: 'none', md: 'block' },
-          '& .MuiDrawer-paper': {
+          display: { xs: "none", md: "block" },
+          "& .MuiDrawer-paper": {
             width: drawerWidth,
-            boxSizing: 'border-box',
-            borderRight: 'none',
+            boxSizing: "border-box",
+            borderRight: "none",
           },
         }}
       >
@@ -122,8 +167,8 @@ export default function Sidebar() {
         onClose={() => setMobileOpen(false)}
         ModalProps={{ keepMounted: true }}
         sx={{
-          display: { xs: 'block', md: 'none' },
-          '& .MuiDrawer-paper': {
+          display: { xs: "block", md: "none" },
+          "& .MuiDrawer-paper": {
             width: drawerWidth,
           },
         }}

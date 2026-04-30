@@ -70,7 +70,7 @@ export default function Templates() {
       <Grid container spacing={3}>
         {/* LEFT - Editor */}
         <Grid item xs={12} md={5} lg={4}>
-          <Card>
+          <Card sx={{ backgroundColor: "rgba(37, 99, 235, 0.05)" }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 New template
@@ -107,8 +107,8 @@ export default function Templates() {
 
         {/* RIGHT - Templates List */}
         <Grid item xs={12} md={7} lg={8}>
-          <Card>
-            <CardContent>
+          {/* <Card>
+            <CardContent> */}
               <Typography variant="h6" gutterBottom>
                 Templates
               </Typography>
@@ -173,8 +173,8 @@ export default function Templates() {
                   </Box>
                 </Box>
               )}
-            </CardContent>
-          </Card>
+            {/* </CardContent>
+          </Card> */}
         </Grid>
       </Grid>
     </Box>

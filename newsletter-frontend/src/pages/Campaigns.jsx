@@ -148,7 +148,7 @@ export default function Campaigns() {
       <Grid container spacing={3}>
         {/* LEFT - Composer */}
         <Grid item xs={12} md={5} lg={4}>
-          <Card>
+          <Card sx={{ backgroundColor: 'rgba(37, 99, 235, 0.05)' }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 Campaign composer
@@ -259,9 +259,9 @@ export default function Campaigns() {
         </Grid>
 
         {/* RIGHT - Campaign List */}
-        <Grid item xs={12} md={7} lg={8}>
-          <Card sx={{ mb: 2 }}>
-            <CardContent>
+        <Grid item xs={12} md={7} lg={8} >
+          {/* <Card sx={{ mb: 2 }}> */}
+            {/* <CardContent> */}
               <Box sx={{ mb: 2 }}>
                 <TextField
                   placeholder="Search campaigns..."
@@ -320,11 +320,11 @@ export default function Campaigns() {
                   No campaigns created
                 </Typography>
               )}
-            </CardContent>
-          </Card>
+            {/* </CardContent> */}
+          {/* </Card> */}
 
           {/* Automation */}
-          <Card>
+          <Card sx={{mt:4}}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
                 Automation
@@ -347,9 +347,9 @@ export default function Campaigns() {
                       const waiting = stats.waiting || 0;
 
                       return (
-                        <Card
+                        <Box
                           key={queueName}
-                          sx={{ mb: 2, p: 2, borderRadius: 3 }}
+                          sx={{ mb: 2, p: 2, borderRadius: 1,  borderBottom: "1.5px solid #b4b4b4", }}
                         >
                           {/* 🔹 TITLE */}
                           <Typography variant="h6">
@@ -387,7 +387,7 @@ export default function Campaigns() {
                               color="warning"
                             />
                           </Box>
-                        </Card>
+                        </Box>
                       );
                     },
                   )}

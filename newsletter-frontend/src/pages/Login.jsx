@@ -36,17 +36,46 @@ export default function Login() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', display: 'grid', placeItems: 'center', bgcolor: 'background.default', p: 2 }}>
-      <Card sx={{ width: 380, boxShadow: 3 }}>
-        <CardContent>
-          <Typography variant="h5" mb={2}>
-            Newsletter Admin Login
-          </Typography>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'grid',
+        placeItems: 'center',
+        background: 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)',
+        p: 2,
+      }}
+    >
+      <Card
+        sx={{
+          width: 400,
+          borderRadius: 3,
+          boxShadow: '0 10px 30px rgba(0,0,0,0.06)',
+        }}
+      >
+        <CardContent sx={{ p: 4 }}>
+          
+          {/* Branding */}
+          <Box sx={{ mb: 3 }}>
+            <Typography
+              variant="h5"
+              sx={{ fontWeight: 700, color: '#111827' }}
+            >
+              Newsletter Console
+            </Typography>
+
+            <Typography variant="body2" sx={{ color: '#6b7280', mt: 0.5 }}>
+              Sign in to manage campaigns and subscribers
+            </Typography>
+          </Box>
+
+          {/* Error */}
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {error}
             </Alert>
           )}
+
+          {/* Form */}
           <Box component="form" onSubmit={handleSubmit} noValidate>
             <TextField
               value={email}
@@ -57,6 +86,7 @@ export default function Login() {
               type="email"
               autoComplete="username"
             />
+
             <TextField
               value={password}
               onChange={(event) => setPassword(event.target.value)}
@@ -66,10 +96,34 @@ export default function Login() {
               type="password"
               autoComplete="current-password"
             />
-            <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }} disabled={loading}>
+
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              sx={{
+                mt: 3,
+                py: 1.2,
+                borderRadius: 2,
+              }}
+              disabled={loading}
+            >
               {loading ? 'Signing in…' : 'Sign In'}
             </Button>
           </Box>
+
+          {/* Optional helper (nice touch for demo) */}
+          <Typography
+            variant="caption"
+            sx={{
+              display: 'block',
+              textAlign: 'center',
+              mt: 3,
+              color: '#9ca3af',
+            }}
+          >
+            Use your registered credentials to continue
+          </Typography>
         </CardContent>
       </Card>
     </Box>
